@@ -815,7 +815,7 @@ function renderGrid() {
     else if (t.univers.includes('librex')) badge = '<span class="badge badge-librex">🎭 Librex</span>';
     else if (t.univers.includes('aventurier')) badge = '<span class="badge badge-aventurier">💪 Aventurier</span>';
     if (t.univers.length > 1) badge += '<span class="badge" style="background: rgba(255,107,53,0.15); color: #FF6B35; border: 1px solid rgba(255,107,53,0.3);">+' + (t.univers.length-1) + '</span>';
-    return `<div class="card" onclick="openModal(${t.id})"><div class="card-header"><span class="card-emoji">${t.emoji}</span><div class="card-title-group"><div class="card-title">${t.title}</div><div class="card-source">${sourceEmoji[t.source]} ${t.source === 'vanier' ? 'Vanier 2025' : t.source === 'new' ? 'Nouveau' : 'Vanier 2021'}</div></div></div><div class="card-desc">${t.desc}</div><div class="card-footer">${badge}</div></div>`;
+    return `<div class="card" onclick="openModal(${t.id})"><div class="card-header"><span class="card-emoji">${t.emoji}</span><div class="card-title-group"><div class="card-title">${t.title}</div></div></div><div class="card-desc">${t.desc}</div><div class="card-footer">${badge}</div></div>`;
   }).join('');
 }
 
