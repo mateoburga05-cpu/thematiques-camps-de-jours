@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🏕️ Planifs Moniteurs — Brossard 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4C63D2;
+      --bg: #F0F3FF;
+      --card: #FFFFFF;
+      --border: #DDE3F5;
+      --text: #1A1A2E;
+      --muted: #8896B0;
+      --radius: 10px;
+      --shadow: 0 2px 10px rgba(76,99,210,0.07);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===========================
+       HEADER
+    =========================== */
+    .app-header {
+      position: sticky; top: 0; z-index: 50;
+      background: white;
+      border-bottom: 2px solid var(--border);
+      padding: 10px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+      box-shadow: 0 2px 12px rgba(76,99,210,0.08);
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo h1 { font-size: 1.15rem; font-weight: 900; color: var(--primary); letter-spacing: -0.3px; }
+    .logo .badge {
+      font-size: 0.7rem; padding: 2px 9px; border-radius: 20px;
+      background: var(--bg); color: var(--muted); border: 1px solid var(--border); font-weight: 600;
+    }
+
+    /* View toggle */
+    .view-toggle {
+      display: flex; background: var(--bg); border-radius: 8px;
+      padding: 3px; border: 1px solid var(--border); gap: 2px;
+    }
+    .vbtn {
+      padding: 6px 14px; border-radius: 6px; border: none;
+      background: transparent; color: var(--muted);
+      font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all .12s;
+    }
+    .vbtn.on { background: white; color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+    /* ===========================
+       CONTROLS
+    =========================== */
+    .controls {
+      padding: 14px 22px 0;
+      display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
+    }
+    .ctrl-grp { display: flex; align-items: center; gap: 7px; }
+    .ctrl-label {
+      font-size: 0.67rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); white-space: nowrap;
+    }
+
+    /* Monitor pills */
+    .mpills { display: flex; gap: 5px; flex-wrap: wrap; }
+    .mpill {
+      padding: 6px 15px; border-radius: 20px; border: 2px solid;
+      font-size: 0.78rem; font-weight: 700; cursor: pointer;
+      transition: all .12s; background: white; white-space: nowrap;
+    }
+    .mpill:hover { filter: brightness(0.95); }
+
+    /* Week pills */
+    .wpills { display: flex; gap: 4px; flex-wrap: wrap; }
+    .wpill {
+      padding: 5px 11px; border-radius: 20px; border: 2px solid var(--border);
+      font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all .12s;
+      background: white; color: var(--muted);
+    }
+    .wpill:hover:not(.on) { border-color: var(--primary); color: var(--primary); }
+    .wpill.on { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* Day filter (coord view) */
+    .dayfilt {
+      display: none; padding: 10px 22px 0;
+      gap: 6px; flex-wrap: wrap; align-items: center;
+    }
+    .dfbtn {
+      padding: 6px 15px; border-radius: 8px; border: 2px solid var(--border);
+      background: white; color: var(--muted); font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; transition: all .12s;
+    }
+    .dfbtn:hover:not(.on) { border-color: var(--primary); color: var(--primary); }
+    .dfbtn.on { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* ===========================
+       MAIN AREA
+    =========================== */
+    .main { padding: 14px 22px 70px; }
+
+    /* Week title bar */
+    .wtitle {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .wtitle-text { font-size: 0.95rem; font-weight: 900; }
+    .mbadge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.76rem; font-weight: 700; color: white; cursor: pointer;
+    }
+    .mbadge:hover { filter: brightness(0.92); }
+    .progress-chip {
+      font-size: 0.7rem; padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: white; color: var(--muted);
+    }
+    .progress-chip b { color: var(--primary); }
+
+    /* ===========================
+       PLANNING GRID
+    =========================== */
+    .grid-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius); }
+
+    .pgrid {
+      display: grid;
+      grid-template-columns: 96px repeat(5, minmax(145px, 1fr));
+      gap: 5px;
+      min-width: 820px;
+    }
+    .pgrid-corner { /* empty */ }
+
+    .dhead {
+      text-align: center; padding: 10px 6px;
+      border-radius: var(--radius); background: white;
+      border: 2px solid var(--border);
+      font-size: 0.82rem; font-weight: 800;
+    }
+    .dhead .dname { display: block; }
+
+    /* Time slot labels */
+    .slabel {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 7px 4px; border-radius: var(--radius); background: white;
+      border: 2px solid var(--border); text-align: center; gap: 2px;
+    }
+    .slabel .si { font-size: 1.25rem; }
+    .slabel .sn { font-size: 0.66rem; font-weight: 800; color: var(--text); }
+    .slabel .st { font-size: 0.58rem; color: var(--muted); }
+
+    /* Grid cells */
+    .gcell {
+      background: white; border: 2px solid var(--border);
+      border-radius: var(--radius); min-height: 92px;
+      transition: border-color .12s, box-shadow .12s;
+    }
+    .gcell.focused { box-shadow: 0 0 0 3px rgba(76,99,210,.1); }
+    .gcell textarea {
+      width: 100%; height: 100%; min-height: 88px;
+      border: none; outline: none; background: transparent;
+      padding: 9px 10px; font-size: 0.8rem; font-family: inherit;
+      line-height: 1.55; color: var(--text); resize: none; border-radius: var(--radius);
+    }
+    .gcell textarea::placeholder { color: #C5CADF; font-style: italic; font-size: 0.74rem; }
+
+    /* Row variants */
+    .r-collation .gcell,
+    .r-collation .slabel { background: #FFFCEC; border-color: #EDD96A; min-height: 55px; }
+    .r-collation .gcell textarea { min-height: 51px; }
+
+    .r-diner .gcell,
+    .r-diner .slabel { background: #F0FDF7; border-color: #8DECBE; min-height: 62px; }
+    .r-diner .gcell textarea { min-height: 58px; }
+
+    .r-fin .gcell,
+    .r-fin .slabel { background: #FDF4FF; border-color: #D9A8EE; min-height: 55px; }
+    .r-fin .gcell textarea { min-height: 51px; }
+
+    /* ===========================
+       COORDINATOR VIEW
+    =========================== */
+    .cgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+      gap: 14px;
+    }
+    .ccard {
+      background: white; border-radius: 12px;
+      border: 2px solid var(--border); overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .12s, box-shadow .12s;
+    }
+    .ccard:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(76,99,210,0.1); }
+    .ccard-head {
+      padding: 11px 15px; color: white;
+      font-weight: 800; font-size: 0.88rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .ccard-meta { font-size: 0.7rem; opacity: 0.85; font-weight: 500; }
+    .cslot { padding: 7px 15px; border-bottom: 1px solid var(--border); }
+    .cslot:last-child { border-bottom: none; }
+    .cslot-label {
+      font-size: 0.63rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--muted); margin-bottom: 2px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .cslot-val { font-size: 0.79rem; line-height: 1.45; color: var(--text); }
+    .cslot-empty { color: #C5CADF; font-style: italic; font-size: 0.74rem; }
+
+    /* Empty state card */
+    .ccard-empty .ccard-head { filter: grayscale(0.4); }
+
+    /* ===========================
+       ACTIONS BAR
+    =========================== */
+    .actions { padding: 0 22px 28px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      padding: 9px 18px; border-radius: 9px; border: none;
+      font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all .12s;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-blue { background: var(--primary); color: white; }
+    .btn-blue:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-red { background: #FF6B6B; color: white; }
+    .btn-red:hover { filter: brightness(1.08); }
+    .btn-outline { background: white; color: var(--muted); border: 2px solid var(--border); }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ===========================
+       TOAST
+    =========================== */
+    #toast {
+      position: fixed; bottom: 22px; right: 22px;
+      background: #00B894; color: white; padding: 9px 18px;
+      border-radius: 20px; font-size: 0.77rem; font-weight: 700;
+      opacity: 0; transform: translateY(8px);
+      transition: all .22s; z-index: 999;
+      box-shadow: 0 4px 14px rgba(0,184,148,.3);
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ===========================
+       MODALS
+    =========================== */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.38);
+      z-index: 200; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .18s;
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+    .modal {
+      background: white; border-radius: 16px; padding: 24px;
+      max-width: 490px; width: 92%; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.15);
+      transform: translateY(12px); transition: transform .18s;
+    }
+    .overlay.show .modal { transform: translateY(0); }
+    .modal h2 { font-size: 1.1rem; margin-bottom: 6px; }
+    .modal p { font-size: 0.82rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+    .modal textarea {
+      width: 100%; height: 140px; border: 2px solid var(--border);
+      border-radius: 9px; padding: 10px; font-family: monospace; font-size: 0.72rem;
+      resize: none; margin-bottom: 12px; outline: none; line-height: 1.5;
+    }
+    .modal textarea:focus { border-color: var(--primary); }
+    .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* Rename popup */
+    .rename-input {
+      width: 100%; padding: 10px 12px; border: 2px solid var(--border);
+      border-radius: 9px; font-size: 0.9rem; font-family: inherit;
+      outline: none; margin-bottom: 14px;
+    }
+    .rename-input:focus { border-color: var(--primary); }
+
+    /* ===========================
+       RESPONSIVE
+    =========================== */
+    @media (max-width: 600px) {
+      .app-header, .controls, .main, .actions, .dayfilt {
+        padding-left: 14px; padding-right: 14px;
+      }
+    }
+
+    /* Filled dot on week pills */
+    .wpill .dot {
+      display: inline-block; width: 5px; height: 5px;
+      border-radius: 50%; background: currentColor;
+      vertical-align: middle; margin-left: 3px; opacity: 0.5;
+    }
+    .wpill.on .dot { opacity: 0.7; background: white; }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+  <div class="logo">
+    <h1>🏕️ Planifs Moniteurs</h1>
+    <span class="badge">Brossard 2026</span>
+  </div>
+  <div class="view-toggle">
+    <button class="vbtn on" id="vbMon" onclick="setView('monitor')">✏️ Ma planif</button>
+    <button class="vbtn" id="vbCoord" onclick="setView('coord')">👀 Vue Mateo</button>
+  </div>
+</header>
+
+<!-- ===== CONTROLS ===== -->
+<div class="controls">
+  <div class="ctrl-grp" id="monCtrl">
+    <span class="ctrl-label">Moniteur</span>
+    <div class="mpills" id="mpills"></div>
+  </div>
+  <div class="ctrl-grp">
+    <span class="ctrl-label">Semaine</span>
+    <div class="wpills" id="wpills"></div>
+  </div>
+</div>
+
+<!-- Day filter (coord only) -->
+<div class="dayfilt" id="dayFilt">
+  <span class="ctrl-label" style="margin-right:2px">Journée</span>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div id="main" class="main"></div>
+
+<!-- ===== ACTIONS ===== -->
+<div class="actions" id="actions"></div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast">✓ Sauvegardé !</div>
+
+<!-- ===== EXPORT MODAL ===== -->
+<div class="overlay" id="exportModal" onclick="if(event.target===this)closeModal('exportModal')">
+  <div class="modal">
+    <h2 id="exportTitle">📤 Exporter mes planifs</h2>
+    <p id="exportDesc">Copie ce texte et envoie-le à Mateo par message ou courriel. Le code d'import en bas lui permet de voir tes planifs directement dans le fichier.</p>
+    <textarea id="exportData" readonly></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('exportModal')">Fermer</button>
+      <button class="btn btn-blue" id="copyBtn" onclick="copyExport()">📋 Copier</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== IMPORT MODAL ===== -->
+<div class="overlay" id="importModal" onclick="if(event.target===this)closeModal('importModal')">
+  <div class="modal">
+    <h2>📥 Importer des planifs</h2>
+    <p>Colle ici le texte complet exporté par un moniteur (incluant le code d'import à la fin). Les données seront chargées dans le fichier.</p>
+    <textarea id="importData" placeholder="Colle le texte exporté ici..."></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('importModal')">Annuler</button>
+      <button class="btn btn-blue" onclick="doImport()">✅ Importer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RENAME MODAL ===== -->
+<div class="overlay" id="renameModal" onclick="if(event.target===this)closeModal('renameModal')">
+  <div class="modal" style="max-width:360px">
+    <h2>✏️ Renommer le moniteur</h2>
+    <p>Entre le vrai prénom du moniteur ici.</p>
+    <input type="text" class="rename-input" id="renameInput" placeholder="Ex: Haribo" maxlength="20"
+           onkeydown="if(event.key==='Enter')saveRename()"/>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('renameModal')">Annuler</button>
+      <button class="btn btn-blue" onclick="saveRename()">✅ Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   CONFIG
+================================================================ */
+const MONITOR_COLORS = ['#FF6B6B','#FF9F43','#D4A200','#26C97A','#20B2AA','#9B8FFF'];
+const MONITOR_LIGHTS = ['#FFF0F0','#FFF5EC','#FFFAEC','#ECFDF3','#E8FAFA','#F2F0FF'];
+
+const WEEKS = 8;
+
+const DAYS = [
+  {id:'lun', name:'Lundi'},
+  {id:'mar', name:'Mardi'},
+  {id:'mer', name:'Mercredi'},
+  {id:'jeu', name:'Jeudi'},
+  {id:'ven', name:'Vendredi'}
+];
+
+const SLOTS = [
+  { id:'accueil',  icon:'🌅', name:'Arrivée',       time:'8h30 – 9h',     row:'r-accueil',  ph:'Brise-glace, accueil des enfants...' },
+  { id:'matin',    icon:'☀️', name:'Matin',          time:'9h – 12h',      row:'r-matin',    ph:'Activité principale, jeu...' },
+  { id:'col_am',   icon:'🍎', name:'Collation',      time:'~10h30',        row:'r-collation',ph:'Collation AM' },
+  { id:'diner',    icon:'🍽️', name:'Dîner',          time:'12h – 13h',     row:'r-diner',    ph:'Dîner, période libre...' },
+  { id:'pm',       icon:'⚡', name:'Après-midi',     time:'13h – 15h30',   row:'r-pm',       ph:'Activité PM, jeu...' },
+  { id:'col_pm',   icon:'🍫', name:'Collation',      time:'~15h30',        row:'r-collation',ph:'Collation PM' },
+  { id:'fin',      icon:'🎒', name:'Fin de journée', time:'15h45 – 16h',   row:'r-fin',      ph:'Rangement, départ des enfants...' }
+];
+
+/* ================================================================
+   STATE
+================================================================ */
+let S = {
+  view:  'monitor',
+  mon:   1,
+  week:  1,
+  day:   'lun',
+  names: {}
+};
+
+function loadNames() {
+  try { S.names = JSON.parse(localStorage.getItem('b26_names') || '{}'); } catch(e) { S.names = {}; }
+}
+
+function mName(i) {
+  return S.names[i] || 'Moniteur ' + i;
+}
+
+function mColor(i) { return MONITOR_COLORS[i-1]; }
+function mLight(i) { return MONITOR_LIGHTS[i-1]; }
+
+/* ================================================================
+   STORAGE
+================================================================ */
+function sk(mon, week, day, slot) {
+  return 'b26_m' + mon + '_w' + week + '_' + day + '_' + slot;
+}
+function gv(mon, week, day, slot) {
+  return localStorage.getItem(sk(mon, week, day, slot)) || '';
+}
+function sv(mon, week, day, slot, val) {
+  if (val) localStorage.setItem(sk(mon, week, day, slot), val);
+  else localStorage.removeItem(sk(mon, week, day, slot));
+  showToast();
+}
+
+function countFilled(mon, week) {
+  let n = 0;
+  DAYS.forEach(d => SLOTS.forEach(s => { if (gv(mon, week, d.id, s.id).trim()) n++; }));
+  return n;
+}
+
+function hasAnyData(mon) {
+  for (let w = 1; w <= WEEKS; w++) {
+    for (const d of DAYS) for (const s of SLOTS) {
+      if (gv(mon, w, d.id, s.id).trim()) return true;
+    }
+  }
+  return false;
+}
+
+/* ================================================================
+   TOAST
+================================================================ */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg || '✓ Sauvegardé !';
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+/* ================================================================
+   BUILD CONTROLS
+================================================================ */
+function buildMonPills() {
+  const c = document.getElementById('mpills');
+  c.innerHTML = '';
+  for (let i = 1; i <= 6; i++) {
+    const on = S.mon === i;
+    const col = mColor(i);
+    const btn = document.createElement('button');
+    btn.className = 'mpill';
+    btn.style.cssText = 'border-color:' + col + ';color:' + (on ? 'white' : col) + ';background:' + (on ? col : 'white');
+    btn.textContent = mName(i);
+    btn.onclick = () => selMon(i);
+    // Dot if has data
+    if (hasAnyData(i)) {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      btn.appendChild(dot);
+    }
+    c.appendChild(btn);
+  }
+}
+
+function buildWeekPills() {
+  const c = document.getElementById('wpills');
+  c.innerHTML = '';
+  for (let w = 1; w <= WEEKS; w++) {
+    const btn = document.createElement('button');
+    btn.className = 'wpill' + (S.week === w ? ' on' : '');
+    const filled = countFilled(S.mon, w);
+    btn.innerHTML = 'S' + w + (filled > 0 ? '<span class="dot"></span>' : '');
+    btn.onclick = () => selWeek(w);
+    c.appendChild(btn);
+  }
+}
+
+function buildDayFilt() {
+  const c = document.getElementById('dayFilt');
+  // Keep label
+  while (c.children.length > 1) c.removeChild(c.lastChild);
+  DAYS.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'dfbtn' + (S.day === d.id ? ' on' : '');
+    btn.textContent = d.name;
+    btn.onclick = () => selDay(d.id);
+    c.appendChild(btn);
+  });
+}
+
+/* ================================================================
+   NAVIGATION
+================================================================ */
+function selMon(m) { S.mon = m; buildMonPills(); buildWeekPills(); render(); }
+function selWeek(w) { S.week = w; buildWeekPills(); render(); }
+function selDay(d) { S.day = d; buildDayFilt(); renderCoord(); }
+
+function setView(v) {
+  S.view = v;
+  document.getElementById('vbMon').classList.toggle('on', v === 'monitor');
+  document.getElementById('vbCoord').classList.toggle('on', v === 'coord');
+  document.getElementById('monCtrl').style.display = v === 'monitor' ? '' : 'none';
+  const df = document.getElementById('dayFilt');
+  df.style.display = v === 'coord' ? 'flex' : 'none';
+  render();
+}
+
+/* ================================================================
+   RENDER — MONITOR VIEW
+================================================================ */
+function render() {
+  S.view === 'monitor' ? renderMonitor() : renderCoord();
+}
+
+function renderMonitor() {
+  const col = mColor(S.mon);
+  const filled = countFilled(S.mon, S.week);
+  const total = DAYS.length * SLOTS.length;
+  const main = document.getElementById('main');
+  main.className = 'main';
+
+  // Build row HTML
+  let rowsHTML = '';
+  SLOTS.forEach(slot => {
+    // Label cell
+    rowsHTML += '<div class="slabel ' + slot.row + '">'
+      + '<span class="si">' + slot.icon + '</span>'
+      + '<span class="sn">' + slot.name + '</span>'
+      + '<span class="st">' + slot.time + '</span>'
+      + '</div>';
+    // Day cells
+    DAYS.forEach(d => {
+      const val = gv(S.mon, S.week, d.id, slot.id);
+      rowsHTML += '<div class="gcell ' + slot.row + '" data-mon="' + S.mon + '" data-week="' + S.week + '" data-day="' + d.id + '" data-slot="' + slot.id + '">'
+        + '<textarea placeholder="' + slot.ph + '">' + escHtml(val) + '</textarea>'
+        + '</div>';
+    });
+  });
+
+  main.innerHTML = '<div class="wtitle">'
+    + '<span class="wtitle-text">Semaine ' + S.week + '</span>'
+    + '<span class="mbadge" style="background:' + col + '" onclick="openRename(' + S.mon + ')" title="Cliquer pour renommer">'
+    + mName(S.mon) + ' ✏️</span>'
+    + '<span class="progress-chip"><b>' + filled + '</b>/' + total + ' cases remplies</span>'
+    + '</div>'
+    + '<div class="grid-wrap"><div class="pgrid" id="pgrid">'
+    + '<div class="pgrid-corner"></div>'
+    + DAYS.map(d => '<div class="dhead" style="border-top:3px solid ' + col + '"><span class="dname">' + d.name + '</span></div>').join('')
+    + rowsHTML
+    + '</div></div>';
+
+  // Wire up textareas
+  main.querySelectorAll('.gcell').forEach(cell => {
+    const ta = cell.querySelector('textarea');
+    const { mon, week, day, slot } = cell.dataset;
+    ta.addEventListener('input', () => sv(+mon, +week, day, slot, ta.value));
+    ta.addEventListener('focus', () => { cell.classList.add('focused'); cell.style.borderColor = col; });
+    ta.addEventListener('blur',  () => { cell.classList.remove('focused'); cell.style.borderColor = ''; });
+  });
+
+  renderActions();
+}
+
+/* ================================================================
+   RENDER — COORDINATOR VIEW
+================================================================ */
+function renderCoord() {
+  const dayObj = DAYS.find(d => d.id === S.day);
+  const main = document.getElementById('main');
+  main.className = 'main';
+
+  const cards = [];
+  for (let mon = 1; mon <= 6; mon++) {
+    const col = mColor(mon);
+    const filled = countFilled(mon, S.week);
+    const hasDay = SLOTS.some(s => gv(mon, S.week, S.day, s.id).trim());
+
+    const slotsHTML = SLOTS.map(slot => {
+      const val = gv(mon, S.week, S.day, slot.id).trim();
+      return '<div class="cslot">'
+        + '<div class="cslot-label">' + slot.icon + ' ' + slot.name + '</div>'
+        + (val
+          ? '<div class="cslot-val">' + escHtml(val).replace(/\n/g, '<br>') + '</div>'
+          : '<div class="cslot-empty">Non rempli</div>')
+        + '</div>';
+    }).join('');
+
+    cards.push('<div class="ccard' + (!hasDay ? ' ccard-empty' : '') + '">'
+      + '<div class="ccard-head" style="background:' + col + '">'
+      + '<span>' + mName(mon) + '</span>'
+      + '<span class="ccard-meta">S' + S.week + ' · ' + filled + '/' + (DAYS.length * SLOTS.length) + '</span>'
+      + '</div>'
+      + slotsHTML
+      + '</div>');
+  }
+
+  main.innerHTML = '<div class="cgrid">' + cards.join('') + '</div>';
+  renderActions();
+}
+
+/* ================================================================
+   ACTIONS
+================================================================ */
+function renderActions() {
+  const c = document.getElementById('actions');
+  if (S.view === 'monitor') {
+    c.innerHTML = ''
+      + '<button class="btn btn-blue" onclick="doExport()">📤 Exporter mes planifs</button>'
+      + '<button class="btn btn-outline" onclick="openImport()">📥 Importer</button>'
+      + '<button class="btn btn-red" onclick="clearWeek()">🗑️ Effacer la semaine</button>';
+  } else {
+    c.innerHTML = ''
+      + '<button class="btn btn-blue" onclick="doExportCoord()">📊 Exporter la vue du jour</button>'
+      + '<button class="btn btn-outline" onclick="openImport()">📥 Importer des planifs</button>';
+  }
+}
+
+/* ================================================================
+   RENAME
+================================================================ */
+let renameTarget = null;
+
+function openRename(mon) {
+  renameTarget = mon;
+  const input = document.getElementById('renameInput');
+  input.value = S.names[mon] || '';
+  input.placeholder = 'Ex: Haribo';
+  openModal('renameModal');
+  setTimeout(() => input.focus(), 200);
+}
+
+function saveRename() {
+  const val = document.getElementById('renameInput').value.trim();
+  if (val && renameTarget) {
+    S.names[renameTarget] = val;
+    localStorage.setItem('b26_names', JSON.stringify(S.names));
+    buildMonPills();
+    render();
+    showToast('✓ Nom mis à jour !');
+  }
+  closeModal('renameModal');
+}
+
+/* ================================================================
+   EXPORT
+================================================================ */
+function doExport() {
+  const mon = S.mon, week = S.week;
+  const name = mName(mon);
+  let txt = '📋 PLANIFS — ' + name.toUpperCase() + ' — SEMAINE ' + week + '\n';
+  txt += '═'.repeat(48) + '\n\n';
+
+  DAYS.forEach(d => {
+    txt += '📅 ' + d.name.toUpperCase() + '\n';
+    let hasContent = false;
+    SLOTS.forEach(s => {
+      const v = gv(mon, week, d.id, s.id).trim();
+      if (v) { txt += '  ' + s.icon + ' ' + s.name + ': ' + v + '\n'; hasContent = true; }
+    });
+    if (!hasContent) txt += '  (Non rempli)\n';
+    txt += '\n';
+  });
+
+  // Encode importable data
+  const data = {};
+  DAYS.forEach(d => SLOTS.forEach(s => {
+    const v = gv(mon, week, d.id, s.id);
+    if (v) data[sk(mon, week, d.id, s.id)] = v;
+  }));
+  txt += '--- CODE D\'IMPORT MATEO ---\n' + btoa(unescape(encodeURIComponent(JSON.stringify({ name, mon, week, data }))));
+
+  document.getElementById('exportTitle').textContent = '📤 ' + name + ' — Semaine ' + week;
+  document.getElementById('exportDesc').textContent = 'Envoie ce texte à Mateo. Il peut coller le code d\'import dans le fichier pour voir tes planifs.';
+  document.getElementById('exportData').value = txt;
+  openModal('exportModal');
+}
+
+function doExportCoord() {
+  const dayObj = DAYS.find(d => d.id === S.day);
+  let txt = '👀 VUE MATEO — Semaine ' + S.week + ' — ' + dayObj.name.toUpperCase() + '\n';
+  txt += '═'.repeat(48) + '\n\n';
+  for (let mon = 1; mon <= 6; mon++) {
+    txt += '👤 ' + mName(mon).toUpperCase() + '\n';
+    SLOTS.forEach(s => {
+      const v = gv(mon, S.week, S.day, s.id).trim();
+      if (v) txt += '  ' + s.icon + ' ' + s.name + ': ' + v + '\n';
+    });
+    txt += '\n';
+  }
+  document.getElementById('exportTitle').textContent = '📊 Vue coordonnateur';
+  document.getElementById('exportDesc').textContent = 'Semaine ' + S.week + ' · ' + dayObj.name;
+  document.getElementById('exportData').value = txt;
+  openModal('exportModal');
+}
+
+function copyExport() {
+  const ta = document.getElementById('exportData');
+  ta.select();
+  document.execCommand('copy');
+  const btn = document.getElementById('copyBtn');
+  btn.textContent = '✅ Copié !';
+  setTimeout(() => btn.textContent = '📋 Copier', 2000);
+}
+
+/* ================================================================
+   IMPORT
+================================================================ */
+function openImport() {
+  document.getElementById('importData').value = '';
+  openModal('importModal');
+}
+
+function doImport() {
+  const raw = document.getElementById('importData').value.trim();
+  const match = raw.match(/--- CODE D'IMPORT MATEO ---\n([A-Za-z0-9+/=\s]+)$/);
+  if (!match) {
+    alert('Code d\'import introuvable.\nAssure-toi de copier le texte COMPLET incluant la ligne "CODE D\'IMPORT MATEO".');
+    return;
+  }
+  try {
+    const decoded = JSON.parse(decodeURIComponent(escape(atob(match[1].trim()))));
+    if (decoded.name) {
+      S.names[decoded.mon] = decoded.name;
+      localStorage.setItem('b26_names', JSON.stringify(S.names));
+    }
+    Object.entries(decoded.data).forEach(([key, val]) => localStorage.setItem(key, val));
+    closeModal('importModal');
+    buildMonPills();
+    buildWeekPills();
+    render();
+    showToast('✓ Planifs importées !');
+  } catch(e) {
+    alert('Erreur lors de l\'import. Le code semble corrompu.');
+  }
+}
+
+/* ================================================================
+   CLEAR
+================================================================ */
+function clearWeek() {
+  if (!confirm('Effacer toute la semaine ' + S.week + ' de ' + mName(S.mon) + ' ?\n\nCette action est irréversible.')) return;
+  DAYS.forEach(d => SLOTS.forEach(s => localStorage.removeItem(sk(S.mon, S.week, d.id, s.id))));
+  buildWeekPills();
+  render();
+  showToast('🗑️ Semaine effacée');
+}
+
+/* ================================================================
+   MODAL HELPERS
+================================================================ */
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+/* ================================================================
+   UTILS
+================================================================ */
+function escHtml(str) {
+  return (str || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+function init() {
+  loadNames();
+  buildMonPills();
+  buildWeekPills();
+  buildDayFilt();
+  render();
+}
+
+init();
+</script>
+</body>
+</html>

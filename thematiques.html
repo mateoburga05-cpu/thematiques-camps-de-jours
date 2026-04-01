@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planifs Brossard 2026</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #f0f0f0;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+      border-bottom: 2px solid #2a2d3a;
+      padding: 2.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #FFD166;
+      text-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    }
+
+    header p {
+      color: #888;
+      font-size: 1.1rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+
+    .univ-nav {
+      display: flex;
+      gap: 1rem;
+      padding: 2rem;
+      background: #1a1d27;
+      border-bottom: 2px solid #2a2d3a;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .univ-btn {
+      background: #1a1d27;
+      border: 2px solid #2a2d3a;
+      color: #f0f0f0;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      min-width: 160px;
+      text-align: center;
+    }
+
+    .univ-btn:hover {
+      transform: translateY(-4px);
+      border-color: #FF6B35;
+      background: rgba(255, 107, 53, 0.05);
+    }
+
+    .univ-btn.active-all {
+      border-color: #FF6B35;
+      background: rgba(255, 107, 53, 0.1);
+      color: #FFD166;
+    }
+
+    .univ-btn.active-flash {
+      border-color: #F7B731;
+      background: rgba(247, 183, 49, 0.1);
+      color: #F7B731;
+    }
+
+    .univ-btn.active-librex {
+      border-color: #A55EEA;
+      background: rgba(165, 94, 234, 0.1);
+      color: #A55EEA;
+    }
+
+    .univ-btn.active-aventurier {
+      border-color: #20BF6B;
+      background: rgba(32, 191, 107, 0.1);
+      color: #20BF6B;
+    }
+
+    .univ-icon {
+      font-size: 1.5rem;
+    }
+
+    .univ-label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .univ-sub {
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .univ-count {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .univ-banner {
+      padding: 1.5rem 2rem;
+      margin: 0 2rem 2rem 2rem;
+      border-radius: 16px;
+      border: 2px solid;
+    }
+
+    .univ-banner.flash {
+      background: rgba(247, 183, 49, 0.1);
+      border-color: #F7B731;
+    }
+
+    .univ-banner.librex {
+      background: rgba(165, 94, 234, 0.1);
+      border-color: #A55EEA;
+    }
+
+    .univ-banner.aventurier {
+      background: rgba(32, 191, 107, 0.1);
+      border-color: #20BF6B;
+    }
+
+    .univ-banner-text {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #f0f0f0;
+    }
+
+    .controls {
+      padding: 2rem;
+      background: #0f1117;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .group-selector {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .group-btn {
+      background: #1a1d27;
+      border: 2px solid #2a2d3a;
+      color: #f0f0f0;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .group-btn:hover {
+      border-color: #FF6B35;
+      transform: translateY(-2px);
+    }
+
+    .group-btn.active {
+      background: #FF6B35;
+      border-color: #FF6B35;
+      color: #0f1117;
+    }
+
+    .group-btn[data-group="g12"] { color: #EF476F; }
+    .group-btn[data-group="g12"].active { background: #EF476F; color: white; }
+    .group-btn[data-group="g34"] { color: #c9a300; }
+    .group-btn[data-group="g34"].active { background: #c9a300; color: white; }
+    .group-btn[data-group="g56"] { color: #06D6A0; }
+    .group-btn[data-group="g56"].active { background: #06D6A0; color: white; }
+
+    .toolbar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      flex: 1;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      background: #1a1d27;
+      border: 2px solid #2a2d3a;
+      color: #f0f0f0;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border 0.3s ease;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: #FF6B35;
+    }
+
+    .cat-filters {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .cat-btn {
+      background: #1a1d27;
+      border: 2px solid #2a2d3a;
+      color: #888;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+
+    .cat-btn:hover {
+      border-color: #FF6B35;
+      color: #f0f0f0;
+    }
+
+    .cat-btn.active {
+      background: #FF6B35;
+      border-color: #FF6B35;
+      color: #0f1117;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #1a1d27;
+      border: 2px solid #2a2d3a;
+      border-radius: 16px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: #FF6B35;
+      box-shadow: 0 12px 24px rgba(255, 107, 53, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .card-emoji {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    .card-title-group {
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #FFD166;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-source {
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .card-desc {
+      color: #ccc;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .card-footer {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid #2a2d3a;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-flash {
+      background: rgba(247, 183, 49, 0.15);
+      color: #F7B731;
+      border: 1px solid rgba(247, 183, 49, 0.3);
+    }
+
+    .badge-librex {
+      background: rgba(165, 94, 234, 0.15);
+      color: #A55EEA;
+      border: 1px solid rgba(165, 94, 234, 0.3);
+    }
+
+    .badge-aventurier {
+      background: rgba(32, 191, 107, 0.15);
+      color: #20BF6B;
+      border: 1px solid rgba(32, 191, 107, 0.3);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.open {
+      display: flex;
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-content {
+      background: #1a1d27;
+      border: 2px solid #FF6B35;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 700px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+      color: #FF6B35;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-right: 2rem;
+    }
+
+    .modal-emoji {
+      font-size: 3rem;
+    }
+
+    .modal-title {
+      font-size: 2rem;
+      color: #FFD166;
+      font-weight: 600;
+    }
+
+    .modal-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #2a2d3a;
+    }
+
+    .modal-tab {
+      background: none;
+      border: none;
+      color: #888;
+      padding: 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .modal-tab:hover {
+      color: #f0f0f0;
+    }
+
+    .modal-tab.active {
+      color: #FF6B35;
+      border-bottom-color: #FF6B35;
+    }
+
+    .modal-tab[data-group="g12"] { color: #EF476F; }
+    .modal-tab[data-group="g12"].active { border-bottom-color: #EF476F; color: #EF476F; }
+    .modal-tab[data-group="g34"] { color: #c9a300; }
+    .modal-tab[data-group="g34"].active { border-bottom-color: #c9a300; color: #c9a300; }
+    .modal-tab[data-group="g56"] { color: #06D6A0; }
+    .modal-tab[data-group="g56"].active { border-bottom-color: #06D6A0; color: #06D6A0; }
+
+    .modal-tab-content {
+      display: none;
+    }
+
+    .modal-tab-content.active {
+      display: block;
+    }
+
+    .activity {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #2a2d3a;
+    }
+
+    .activity:last-child {
+      border-bottom: none;
+    }
+
+    .activity-title {
+      font-weight: 600;
+      color: #FFD166;
+      margin-bottom: 0.5rem;
+    }
+
+    .activity-desc {
+      color: #ccc;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .modal-extra {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #2a2d3a;
+    }
+
+    .modal-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-section-title {
+      color: #888;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-section-content {
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .material-list {
+      list-style: none;
+      color: #ccc;
+    }
+
+    .material-list li {
+      padding: 0.3rem 0 0.3rem 1.5rem;
+      position: relative;
+    }
+
+    .material-list li:before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #FF6B35;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0f1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2a2d3a;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #FF6B35;
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #888;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+      .controls {
+        flex-direction: column;
+      }
+      .toolbar {
+        flex-direction: column;
+      }
+      .search-box {
+        min-width: 100%;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .univ-nav {
+        flex-direction: column;
+      }
+      .univ-btn {
+        width: 100%;
+      }
+      .modal-content {
+        width: 95%;
+        max-height: 90vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Planifs Brossard 2026</h1>
+  <p>Hub de planification pour les moniteurs — Tous les thèmes, toutes les activités</p>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background: #EF476F;"></div>
+      Groupe 1-2
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #c9a300;"></div>
+      Groupe 3-4
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #06D6A0;"></div>
+      Groupe 5-6
+    </div>
+  </div>
+</header>
+
+<div class="univ-nav">
+  <button class="univ-btn active-all" onclick="setUnivers(this,'all')">
+    <span class="univ-icon">🏕️</span>
+    <span class="univ-label">Tous les thèmes</span>
+  </button>
+  <button class="univ-btn" onclick="setUnivers(this,'flash')">
+    <span class="univ-icon">⚡</span>
+    <span class="univ-label">Flash</span>
+    <span class="univ-sub">Bricolage & Création</span>
+  </button>
+  <button class="univ-btn" onclick="setUnivers(this,'librex')">
+    <span class="univ-icon">🎭</span>
+    <span class="univ-label">Librex</span>
+    <span class="univ-sub">Artistique & Exploration</span>
+  </button>
+  <button class="univ-btn" onclick="setUnivers(this,'aventurier')">
+    <span class="univ-icon">💪</span>
+    <span class="univ-label">Aventurier</span>
+    <span class="univ-sub">Gros Muscles & Plein air</span>
+  </button>
+</div>
+
+<div class="univ-banner" id="univ-banner" style="display:none">
+  <div class="univ-banner-text" id="univ-banner-text"></div>
+</div>
+
+<div class="controls">
+  <div class="group-selector">
+    <button class="group-btn active" data-group="all" onclick="setGroup(this, 'all')">Tous</button>
+    <button class="group-btn" data-group="g12" onclick="setGroup(this, 'g12')">Groupe 1-2</button>
+    <button class="group-btn" data-group="g34" onclick="setGroup(this, 'g34')">Groupe 3-4</button>
+    <button class="group-btn" data-group="g56" onclick="setGroup(this, 'g56')">Groupe 5-6</button>
+  </div>
+  <div class="toolbar">
+    <input type="text" class="search-box" id="search" placeholder="Rechercher un thème..." oninput="filterCards()">
+    <div class="cat-filters">
+      <button class="cat-btn active" onclick="setCat(this, 'all')">Tous</button>
+      <button class="cat-btn" onclick="setCat(this, 'creatif')">Créatif</button>
+      <button class="cat-btn" onclick="setCat(this, 'mouvement')">Mouvement</button>
+      <button class="cat-btn" onclick="setCat(this, 'exterieur')">Extérieur</button>
+      <button class="cat-btn" onclick="setCat(this, 'fete')">Fête</button>
+      <button class="cat-btn" onclick="setCat(this, 'culture')">Culture</button>
+      <button class="cat-btn" onclick="setCat(this, 'science')">Science</button>
+    </div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal" id="modal" onclick="maybeClose(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <span class="modal-emoji" id="modal-emoji"></span>
+      <span class="modal-title" id="modal-title"></span>
+    </div>
+    <div class="modal-tabs" id="modal-tabs"></div>
+    <div id="modal-tab-contents"></div>
+    <div class="modal-extra">
+      <div class="modal-section">
+        <div class="modal-section-title">💡 Conseil</div>
+        <div class="modal-section-content" id="modal-tip"></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">📦 Matériel</div>
+        <ul class="material-list" id="modal-materials"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const themes = [
+  {id:1, emoji:"🎡", title:"Carnaval", source:"vanier", cat:"fete", desc:"Grande fête avec costumes, jeux forains et ambiance carnavalesque!", tip:"Les masques et chapeaux de carnaval se font rapidement avec du papier et marqueurs — prépare les modèles d'avance.", univers:["aventurier"], materials:["Masques en papier", "Plumes colorées", "Marqueurs", "Ruban adhésif"], groups:{g12:[{name:"Mon masque de carnaval", desc:"Décorer un masque pré-découpé avec des plumes, autocollants et marqueurs — chaque enfant se crée une identité de fêtard."},{name:"Danse du carnaval", desc:"Danser au rythme de musique festive — quelques mouvements simples, beaucoup de rire et d'énergie!"},{name:"Jeux forains simples", desc:"Trois petits jeux: lancer des balles dans des paniers, danser autour de cônes, pêche à la ligne fictive."},{name:"Défilé costumé", desc:"Tous les enfants enfilent leurs accessoires et défilent dans la cour — parents imaginent, applaudissements garantis!"}], g34:[{name:"Création masque thématique", desc:"Choisir un personnage (super-héros, animal, monstre) et créer le masque correspondant — plus de détails, plus de créativité."},{name:"Jeux forains chronométrés", desc:"Pêche à la ligne, anneaux de carnaval, chasse aux pièces cachées — score pour chaque équipe."},{name:"Danse chorégraphiée", desc:"Apprendre 3-4 mouvements de danse carnavalesque ensemble — performance collective."},{name:"Défilé et vote", desc:"Défiler par duo, audience vote pour les meilleurs masques — diplômes de carnaval remis à la fin."}], g56:[{name:"Design masque avancé", desc:"Créer un masque avec plusieurs étages, des articulations mobiles — technique de bricolage plus complexe."},{name:"Organisation jeux forains", desc:"Les plus vieux organisent 4 stations de jeu pour les plus jeunes — ils tiennent les scores et encouragent."},{name:"Chorégraphie personnalisée", desc:"En petits groupes, créer une danse originale carnavalesque — musique choisie, mouvements inventés."},{name:"Grand défilé et cérémonie", desc:"Tous les groupes défilent simultanément, proclamation du 'Roi et Reine du Carnaval', remise de couronnes en carton."}]}},
+
+  {id:2, emoji:"🌺", title:"Tropical", source:"vanier", cat:"mouvement", desc:"Plage, palmiers, bungalows — ambiance vacances tropicales avec jeux de détente!", tip:"Mets de la vraie musique tropicale (ukulélé, reggae léger) en fond sonore toute la journée — l'ambiance fait 50% du succès.", univers:["aventurier"], materials:["Feuilles de palmier (papier)", "Leis de fleurs artificielles", "Jus tropical", "Parasols en papier"], groups:{g12:[{name:"Lei Hawaiian", desc:"Enfiler des fleurs artificielles sur un lacet — se créer un collier tropical. Chacun en fabrique un ou deux."},{name:"Marche des pieds nus", desc:"Enlever les chaussures, marcher sur des matériaux différents (herbe, sable imaginaire, galets) — sensations exotiques."},{name:"Danse Hula facile", desc:"Mouvements de hanche simples à la musique — c'est naturel pour les petits, pas de gêne!"},{name:"Boisson tropicale", desc:"Préparer un vrai jus tropical (orange, ananas, noix de coco) — moment de détente ensemble."}], g34:[{name:"Création bungalow", desc:"Construire un petit abri avec des serviettes, des branches — chaque duo crée sa 'maison tropicale'."},{name:"Jeux de plage adaptée", desc:"Volleyball assis, beach ball, limbo — jeux en lien avec la plage, pas besoin d'eau réelle!"},{name:"Tatouages temporaires tropicaux", desc:"Dessiner des motifs tropicaux (feuilles, fleurs, vagues) sur les bras avec des marqueurs lavables."},{name:"Banquet tropical", desc:"Manger des fruits tropicaux (mangue, ananas, coco) — chacun met un Lei et prétend être en vacances."}], g56:[{name:"Création décor tropical complet", desc:"En équipes, transformer une zone du camp en île tropicale — palmiers, plage, bungalows, piste de danse."},{name:"Surf simulation", desc:"Apprendre les bases du surf sur une planche fictive — technique, équilibre, style"},{name:"Spectacle luau", desc:"Préparer un petit show (danse, chant, sketch) tropical — invitation des plus jeunes à regarder."},{name:"Quiz cultures tropicales", desc:"Questions sur les îles, les traditions, la géographie — jeu amusant et éducatif."}]}},
+
+  {id:3, emoji:"🏴‍☠️", title:"Pirates", source:"vanier", cat:"exterieur", desc:"Chasse au trésor épique, navires et butins — l'aventure pirate prend vie!", tip:"Un coffre rempli de bonbons/pièces de chocolat au bout de la chasse au trésor rend tout magique — garde le suspense jusqu'à la fin.", univers:["aventurier"], materials:["Bandanas", "Épées en carton", "Coffre (ou boîte)", "Cartes au trésor", "Chaînes de chaînes (cordes)"], groups:{g12:[{name:"Je suis un pirate", desc:"Chaque enfant se fabrique un bandana noir et une épée de carton — costume pirate instantané."},{name:"Promenade du planche guidée", desc:"Une planche de bois imaginaire — les enfants la traversent un par un avec les yeux fermés, moniteur fait dramatique."},{name:"Petite chasse au trésor facile", desc:"5 indices cachés progressifs menant au trésor — adulte accompagne chaque duo."},{name:"Trésor et célébration", desc:"Arrivée au coffre, distribution de pièces de chocolat — tous les pirates sont riches!"}], g34:[{name:"Création carte au trésor", desc:"Chaque équipe crée sa propre carte (sur parchemin vieilli) — coin caché, marques mystérieuses."},{name:"Chasse au trésor complète", desc:"10 indices cachés menant à 3 stations de défis pirates — réussir chaque défi pour obtenir l'indice suivant."},{name:"Combat de sabres simulé", desc:"Épées en mousse, duel avec les moniteurs ou entre pirates — no contact, juste du théâtre!"},{name:"Partage du butin", desc:"À la fin, ouverture du coffre — distribution égale des trésors à tous les pirates."}], g56:[{name:"Chasse au trésor stratégique", desc:"Carte complexe, plusieurs chemins possibles — équipes doivent choisir leur route et gérer leur temps."},{name:"Stations défis épiques", desc:"Combat de sabres avec points, énigmes, travail d'équipe pour soulever le coffre, etc."},{name:"Grande bataille finale", desc:"Deux équipes rivales (équipages) s'affrontent pour le trésor final — jeu dramatique et amusant."},{name:"Couronnement du capitaine", desc:"L'équipe gagnante élit son capitaine — cérémonie avec sceptre en carton et couronne de pirate."}]}},
+
+  {id:4, emoji:"🎪", title:"Campchella", source:"vanier", cat:"creatif", desc:"Festival de musique et de spectacles — chaque moniteur/enfant est un artiste!", tip:"Demande aux enfants de préparer un petit numéro d'avance (20 sec max) — ça limite la gêne et accélère le show.", univers:["flash"], materials:["Micros carton", "Scène improvisée", "Projecteur (lampe)", "Corde pour délimiter"], groups:{g12:[{name:"Mon talent 30 sec", desc:"Chaque enfant prépare un petit numéro (chanson, danse, blague, grimace) de 30 secondes maximum."},{name:"Scène décorée facile", desc:"Tracer une scène avec de la tape au sol — ajouter des drapeaux en papier, c'est festif!"},{name:"Applaudissements géants", desc:"Après chaque performance, applaudissements bruyants et encouragements — tout le monde est génial."},{name:"Disco finale", desc:"Danser tous ensemble sur musique de festival — célébration finale de Campchella."}], g34:[{name:"Préparation numéro en duo/trio", desc:"Chaque petit groupe invente un numéro — musique, danse, sketch, jeu musical."},{name:"Affiche et décor festival", desc:"Créer une affiche Campchella + décorer la scène avec ballons, lumières imaginaires, tapis rouge."},{name:"Système de vote", desc:"Audience vote (par applaudissements ou cartons) pour 3 catégories: Plus drôle, Plus musicale, Plus créative."},{name:"Grande scène avec micro passant", desc:"Vrai micro (ou microphone carton), les numéros durent 1-2 min — plus professionnel!"}], g56:[{name:"Production complète", desc:"Un groupe gère son numéro, un groupe est animateur, un groupe est producteur (lumières, musique), un groupe est public."},{name:"Diversité artistique", desc:"Au moins 6 numéros différents: musique, danse, théâtre, cirque, stand-up, spectacle d'ombres."},{name:"Affiche et marketing", desc:"Créer une affiche au design festival — distribuer des 'billets' aux autres groupes pour créer l'excitation."},{name:"Cérémonie de clôture", desc:"Remise de trophées imaginaires, discours des 'artistes', finale surprise — grand show de camp!"}]}},
+
+  {id:5, emoji:"🪩", title:"Disco", source:"vanier", cat:"fete", desc:"Danse, disco ball, lumières colorées — la nuit disco revient au camp!", tip:"Un simple projecteur qui tourne + musique disco = magie. Si pas de projecteur, utilise des lampes de poche colorées.", univers:["aventurier"], materials:["Boule à facettes (ou faite main)", "Lampes de poche colorées", "Peinture fluorescente", "Affiches years 70-80"], groups:{g12:[{name:"Mon costume disco", desc:"Peindre des bandes fluorescentes sur vêtements simples avec peinture UV — pas de costumes compliqués."},{name:"Danse disco douce", desc:"Quelques pas simples: pas-croisé, main levée. Musique facile comme 'Stayin' Alive'."},{name:"Limbo disco", desc:"Muscade Limbo avec musique disco — qui passe le plus bas? C'est hilarant!"},{name:"Boule disco maison", desc:"Une balle blanche peinte avec réfléchissant — c'est ma disco ball improvisée!"}], g34:[{name:"Costume disco personnalisé", desc:"Paillettes, chaînes, scarves — chaque enfant se crée un look seventies/eighties."},{name:"Chorégraphie disco", desc:"Apprendre une vraie chorégraphie de 2 minutes avec mouvements synchronisés — groupe cohésif!"},{name:"Jeux disco thématiques", desc:"Freeze dance, chaises musicales disco, limbo — musique disco en continu."},{name:"Décor disco complet", desc:"Créer une piste de danse avec lampes, affiches, balle disco maison tournante."}], g56:[{name:"Production disco concert", desc:"Scène disco avec lumières, un groupe anime la musique, un groupe danse en spectacle, les autres observent (rôles alternent)."},{name:"Spectacle de danse", desc:"Numéro de danse disco chorégraphié (3-4 min) avec tous les plus vieux — vraie performance!"},{name:"Quiz années 70-80", desc:"Connaître les grands artistes disco, les films, les tendances — amusant et éducatif!"},{name:"Dance battle final", desc:"Deux équipes s'affrontent en danse libre sur musique disco — jury (moniteurs) vote le meilleur style."}]}},
+
+  {id:6, emoji:"🕵️", title:"Espions", source:"vanier", cat:"mouvement", desc:"Missions secrètes, codes, codes QR — l'espionnage prend forme au camp!", tip:"Préparer d'avance des missions écrites sur des cartes cachées — ça rend tout plus réel et mystérieux.", univers:["aventurier"], materials:["Cartes de missions", "Lampe UV (optionnel)", "Codes secrètes", "Vêtements noirs", "Talkie-walkies (optionnel)"], groups:{g12:[{name:"Agent secret débutant", desc:"Recevoir une première mission simple: trouver un objet caché, donner un code secret au moniteur."},{name:"Code secret d'équipe", desc:"Créer un mot de passe d'équipe — pour se reconnaître entre espions."},{name:"Marche furtive", desc:"Marcher sans bruit, se cacher derrière les arbres, passer sans se faire voir par l'ennemi (moniteur)."},{name:"Briefing d'espion", desc:"Équipes de 2-3 enfants reçoivent leur première 'vraie' mission — garder le secret!"}], g34:[{name:"Missions progressives", desc:"5 missions: coder/décoder un message, photographier un objet, transporter quelque chose sans se faire voir, etc."},{name:"Codes secrets", desc:"Apprendre un code simple (lettres → chiffres, ou l'inverse) et décoder des messages d'autres agents."},{name:"Jeu du chat et la souris", desc:"Une équipe 'espions en fuite', une équipe 'gardes'. Espions doivent livrer un objet d'un point A à B sans être touchés."},{name:"Décodage collectif", desc:"Une grande énigme finale codée — toutes les équipes travaillent ensemble pour la résoudre et déverrouiller le trésor."}], g56:[{name:"Grand jeu espions complet", desc:"8-10 stations avec missions variées, codes complexes, alliances temporaires entre agences."},{name:"Rôles spécialisés", desc:"Hackeur (codes), Agent de terrain (physique), Pilote de drone (qui lance des balles), Analyseur (enquête)."},{name:"Objectif stratégique", desc:"Deux agences rivales: récupérer des 'dossiers secrets' (cartes) avant l'autre — faux départ possible!"},{name:"Débrief post-mission", desc:"Après la fin, chaque agent explique sa meilleure action — vote pour le meilleur espion du jour."}]}},
+
+  {id:7, emoji:"🌿", title:"Nature", source:"vanier", cat:"exterieur", desc:"Exploration, botanique, créatures de la forêt — immersion naturelle complète!", tip:"Apportez des loupes ou des verres magiques — les enfants adorent observer les petites créatures.", univers:["aventurier"], materials:["Loupes", "Filets (papillon optionnel)", "Cahier de croquis", "Empreintes en plâtre", "Guide animaux"], groups:{g12:[{name:"Chasse aux feuilles", desc:"Trouver 5 types de feuilles différentes, les coller dans un carnet — créer un herbier simple."},{name:"Observation des insectes", desc:"À la loupe, observer les insectes sans les déranger — dessiner ce qu'on voit."},{name:"Marche silencieuse dans la nature", desc:"Marcher très lentement, en silence, en écoutant les sons — combien de bruits différents entend-on?"},{name:"Construction nid d'oiseau", desc:"Avec des brindilles et mousse, créer un petit nid — où vivent les oiseaux?"}], g34:[{name:"Herbier complet", desc:"Cueillir 10 plantes/fleurs, les presser entre papier, les classer, les identifier."},{name:"Empreintes d'animaux", desc:"Faire des moulages en plâtre d'empreintes de pattes trouvées — créer un musée des traces."},{name:"Chaîne alimentaire", desc:"Identifier producteurs, consommateurs, décomposeurs — construire une chaîne visuelle avec des images."},{name:"Carte de la nature", desc:"Faire une grande carte du site avec les zones d'arbres, d'eau, de rochers — marquer les découvertes."}], g56:[{name:"Étude écosystème complet", desc:"Documenter une zone (petite): quelles plantes, quels insectes, quel sol, quelle eau, quels oiseaux?"},{name:"Naturaliste pour un jour", desc:"Chaque enfant choisit une plante ou animal et devient l'expert — présenter aux autres groupes."},{name:"Conservation et biodiversité", desc:"Pourquoi certaines espèces disparaissent? Qu'est-ce qu'on peut faire pour aider la nature?"},{name:"Création guide nature", desc:"Faire un vrai petit guide du site avec illustrations, noms scientifiques, faits intéressants — publication imaginaire."}]}},
+
+  {id:8, emoji:"🔬", title:"Sciences", source:"vanier", cat:"science", desc:"Expériences amusantes, chimie créative, volcans — la science explode!", tip:"Les réactions chimiques (mélange coloré, explosion visuelle) sont toujours un hit — prépare 2-3 expériences accrochantes.", univers:["flash"], materials:["Vinaigre", "Bicarbonate", "Colorant alimentaire", "Poudre effervescente", "Contenants"], groups:{g12:[{name:"Volcan coloré", desc:"Bicarbonate + vinaigre dans un conteneur — ça mousses partout! Ajouter du colorant pour le spectacle."},{name:"Réaction chimique simple", desc:"Mélanger 2-3 ingrédients simples et observer (eau + savon + colorant par exemple)."},{name:"Cristaux de sucre", desc:"Dissoudre du sucre dans l'eau chaude, laisser crystalliser — mini science de la patience!"},{name:"Dessins scientifiques", desc:"Chaque enfant dessine son expérience favorite — comparer et discuter ce qui s'est passé."}], g34:[{name:"Expérience volcan complexe", desc:"Structure en pâte à modeler, réaction chimique, peinture — vrai miniature volcano."},{name:"Cristaux colorés", desc:"Faire des cristaux avec de l'acide borique ou sucre — variation de couleurs, plus spectaculaire."},{name:"Chimie des couleurs", desc:"Mélanger pigments naturels, apprendre les couleurs primaires/secondaires avec vraies réactions."},{name:"Présentation scientifique", desc:"Chaque groupe prépare une expérience et la présente aux autres — rôle d'expérimentateur/présentateur."}], g56:[{name:"Lab de chimie complet", desc:"5 expériences différentes: volcan, cristaux, polymère (slime scientifique), changements de pH, réactions exothermiques."},{name:"Hypothèse et observation", desc:"Avant chaque expérience: prédire ce qui va se passer, observer, noter résultats, expliquer pourquoi."},{name:"Journal scientifique", desc:"Documenter chaque expérience avec dessins, notes, formules chimiques simples."},{name:"Exposition science", desc:"Présenter les 5 expériences aux autres groupes comme un vrai labo scientifique — certificats de scientifique remis!"}]}},
+
+  {id:9, emoji:"🏗️", title:"Construction", source:"vanier", cat:"mouvement", desc:"Construire ensemble, tours, ponts — le travail d'équipe architecturale!", tip:"Aie une variété de matériaux: carton, bois, briques, paille. Pas besoin qu'ça tienne longtemps — la création c'est ce qui compte.", univers:["flash","aventurier"], materials:["Carton", "Bâtons de bois", "Paille", "Briques de construction", "Tape adhésif"], groups:{g12:[{name:"Tour de blocs", desc:"Empiler des blocs/briques pour faire la plus haute tour possible — qui ose la plus haute?"},{name:"Maison de paille", desc:"Construire une hutte avec de la paille, du bois et tape — travail collectif!"},{name:"Pont fragile", desc:"Faire un pont avec des cartons qui doit supporter le poids d'une balle de tennis — ingénierie simplifiée."},{name:"Destruction créative", desc:"À la fin, on démollit tout ensemble — bruitages amusants, rires garantis!"}], g34:[{name:"Tour de compétition", desc:"Deux équipes construisent la plus haute tour stable en 10 minutes avec matériel limité — qui gagne?"},{name:"Abri ou château", desc:"En équipe, construire une vraie petite structure habitable — toit, murs, porte."},{name:"Pont suspendu", desc:"Pont qui doit supporter un poids donné — test de stabilité, ajustements ingénieurs."},{name:"Construction thématique", desc:"Construire une maison de contes (château, hutte, igloo imaginaire) — inspiration des histoires."}], g56:[{name:"Projet d'architecture complet", desc:"Plan l'équipe de ce qu'elle veut construire, matériaux disponibles, délai — vrai projet architectural."},{name:"Pont ou structure complexe", desc:"Pont à plusieurs arches, tour avec plateformes, labyrinthe de carton — défis de stabilité."},{name:"Gestion du projet", desc:"Un chef de projet, un ingénieur, des ouvriers — rôles distincts, communication importante."},{name:"Exposition construction", desc:"À la fin, chaque équipe explique sa structure: matériaux utilisés, défis, innovations — visites des autres groupes."}]}},
+
+  {id:10, emoji:"🎬", title:"Hollywood", source:"vanier", cat:"creatif", desc:"Tournage de film, effets spéciaux, acteurs — le cinéma prend vie!", tip:"Utiliser le téléphone pour tourner les vidéos — c'est facile et les enfants adorent se voir à l'écran.", univers:["librex","flash"], materials:["Téléphone/caméra", "Script", "Accessoires", "Décors carton", "Éclairage simple"], groups:{g12:[{name:"Skit court 30 sec", desc:"Petite scène amusante (chute, blague, action) tournée en vidéo — on la regarde ensemble!"},{name:"Accessoires acteur", desc:"Chapeaux, fausses moustaches, couronnes — enfiler un costume pour jouer un personnage."},{name:"Scène du crime mimée", desc:"Mimer une action (vol, accident, sauvetage) — les autres devinent ce qui s'est passé."},{name:"Générique de film", desc:"Créer un générique avec les enfants qui dansent, sautent, font la grimace — on tourne en 1 minute!"}], g34:[{name:"Court-métrage de 2-3 min", desc:"Écrire un petit scénario, distribuer les rôles, tourner — c'est du vrai cinéma!"},{name:"Effets spéciaux simples", desc:"Montage rapide, répétition en ralenti, gros plan dramatique — créer illusions avec la caméra."},{name:"Décor de film", desc:"Construire un petit décor en carton (cuisine, prison, palais) — contexte pour la scène."},{name:"Avant-première", desc:"Regarder le film tous ensemble avec pop-corn — applaudissements des acteurs!"}], g56:[{name:"Production de film complète", desc:"Rôles: réalisateur, acteurs, caméra, son, décor. Scénario plus long (5+ min), vraie production."},{name:"Genres variés", desc:"Une équipe fait une comédie, une un drame, une une action — diversité de styles."},{name:"Montage et édition", desc:"Les plus vieux apprennent à éditer sur un téléphone/ordinateur — transitions, musique, titres."},{name:"Festival de film", desc:"Projection de tous les films avec écran géant improvisé, tapis rouge, remise de prix — vraie cérémonie!"}]}},
+
+  {id:11, emoji:"💜", title:"Fluorescence", source:"vanier", cat:"fete", desc:"Peinture UV, lumière noire, créations qui brillent — ambiance magique!", tip:"La peinture UV coûte un peu mais le WOW factor vaut complètement le coup — les enfants adorent se peindre et voir briller l'invisible.", univers:["flash"], materials:["Peinture UV (glow)", "Lampe noire (blacklight)", "Pinceaux", "Marqueurs fluorescents", "Vêtements blancs optionnel"], groups:{g12:[{name:"Mon corps fluorescent", desc:"Peindre des motifs simples au visage et aux bras avec peinture UV — voir briller sous la lampe noire!"},{name:"Danse dans le noir", desc:"Danser avec des vêtements blancs/clairs sous lumière noire — on voit tout briller!"},{name:"Dessin fluorescent", desc:"Dessiner avec marqueurs fluorescents sur papier blanc — voir sous la lampe noire."},{name:"Chasse aux objets brillants", desc:"Cacher des objets couverts de peinture UV — trouver-les sous la lampe noire!"}], g34:[{name:"Peinture corporelle artistique", desc:"Motifs plus complexes au visage et corps — spirales, animaux, géométrique."},{name:"Vêtements personnalisés", desc:"Peindre des motifs au marqueur sur vêtements/chaussettes blanches — porter son art!"},{name:"Rave party enfants", desc:"Musique, lumière noire, danse avec accessoires fluorescents — vraie petite rave!"},{name:"Toile fluorescente", desc:"Peindre sur une grande toile avec peinture UV — chef-d'œuvre collectif qui brille!"}], g56:[{name:"Installation art fluorescence", desc:"Créer une zone complète avec décor fluorescent, danse performative, jeu d'ombres — art immersif."},{name:"Spectacle de danse noire", desc:"Numéro dansé avec costume blanc fluorescent + accessoires (ruban, poi) sous lumière noire."},{name:"Exposition photo", desc:"Prendre des photos sous lumière noire — créer une galerie de portraits fluorescents."},{name:"Rave production complet", desc:"DJ (musique), éclairage (jeux de lumière), danseurs, décor — vraie petite rave organisée par les enfants!"}]}},
+
+  {id:12, emoji:"🎈", title:"Ballon", source:"vanier", cat:"mouvement", desc:"Jeux avec ballons, volley balloon, competitions — l'air en jeu!", tip:"Des ballons de couleurs différentes, mélangés, crée un environnement joyeux — investis dans du bon matériel!", univers:["aventurier"], materials:["Ballons de couleurs", "Filet volley", "Masking tape", "Corde"], groups:{g12:[{name:"Ballon en l'air", desc:"Lancer le ballon en l'air, il ne doit pas tomber — le groupe travaille ensemble."},{name:"Hot balloon", desc:"Passer le ballon rapidement sans le laisser tomber — musique qui arrête = élimination douce."},{name:"Parcours avec ballons", desc:"Parcours où on doit garder un ballon entre deux enfants — travail de coopération."},{name:"Décoration ballon", desc:"Peindre/décorer des ballons — chaque enfant a son ballon personnalisé."}], g34:[{name:"Volley-balloon", desc:"Filet improvisé, ballon doux, on joue simplement sans scoring trop complexe."},{name:"Popping festival", desc:"Éclater les ballons avec des défis: sauter, danser, combien de fois faire un tour avant de sauter?"},{name:"Relais ballon", desc:"Course relais où il faut tenir un ballon entre deux personnes sans les mains."},{name:"Battle ballons", desc:"Deux équipes, jeu de capture le ballon — plus de ballons = plus de folie!"}], g56:[{name:"Tournoi volley-balloon", desc:"Règles vraies, scoring, plusieurs matchs, podium à la fin."},{name:"Jeux olympiques ballon", desc:"5 épreuves: volley, course, trick shots, endurance, équipe — tableau de scores."},{name:"Construire structure ballon", desc:"Avec plusieurs ballons, construire une sculpture ou château — voir combien on peut empiler."},{name:"Défi créatif ballon", desc:"Inventer un nouveau jeu avec ballons en équipe — tester et jouer aux créations des autres."}]}},
+
+  {id:13, emoji:"🤔", title:"Guess Who", source:"vanier", cat:"culture", desc:"Devinettes, énigmes, qui suis-je — la réflexion sous forme ludique!", tip:"Prépare d'avance des énigmes écrites ou des images de personnages connus — ça accélère le jeu.", univers:["librex"], materials:["Images de personnages", "Énigmes écrites", "Masques simples"], groups:{g12:[{name:"Guess Who animal simple", desc:"Images d'animaux — poser des questions oui/non pour deviner. 'Est-ce que je suis jaune? Est-ce que je vole?'"},{name:"Devinette facile", desc:"Énigmes simples: 'Je suis rond et rouge, qu'est-ce que je suis?' → Pomme!"},{name:"Qui a parlé", desc:"Un enfant s'enroule dans une couverture, on le cache. Il parle et les autres devinent qui c'est."},{name:"Charades faces", desc:"Mimer un animal ou un métier — les autres devinent juste en regardant."}], g34:[{name:"Guess Who personnages", desc:"Images de célébrités/personnages de dessins animés — chacun a le droit à 10 questions oui/non."},{name:"Énigmes moyennes", desc:"Plus complexes: 'Que faut-il pour remplir un seau vide?' → Plus de seau! Blagues-énigmes!"},{name:"Mystery box", desc:"Une boîte avec des indices à l'intérieur — combien d'indices avant de deviner?"},{name:"Battle énigmes", desc:"Deux équipes se posent des énigmes — qui devine le plus vite?"}], g56:[{name:"Enquête mystère", desc:"Un personnage mystérieux a commis quelque chose (imaginaire). Poser 20 questions pour le découvrir."},{name:"Énigmes complexes", desc:"Vrai jeu d'énigmes: logique, jeux de mots, devinettes du folklore — qui est le plus malin?"},{name:"Créer énigmes", desc:"Chaque groupe crée 3 énigmes pour les autres groupes — notation de difficulté."},{name:"Quiz culture pop", desc:"Questions sur les films, séries, personnages célèbres — celui qui connaît le mieux gagne!"}]}},
+
+  {id:14, emoji:"🏅", title:"Olympiques", source:"new", cat:"mouvement", desc:"Jeux olympiques pour enfants, podiums, médailles — l'esprit sportif compétitif!", tip:"Les vraies médailles (même faites main en carton) rendent tout plus spécial — chaque enfant gagne quelque chose.", univers:["aventurier"], materials:["Médailles en carton", "Torche imaginaire", "Drapeau", "Chronomètre", "Vestiaires"], groups:{g12:[{name:"Cérémonie d'ouverture", desc:"Marche des nations, flamme olympique allumée (bougies de fête), hymne national chanté."},{name:"Épreuves faciles", desc:"Course simple, saut en longueur, lancer de balle — scoring très simple."},{name:"Podium 1-2-3", desc:"Pour chaque épreuve, top 3 montent sur podium — mini hymne joué."},{name:"Fête de clôture", desc:"Distribution de médailles à tous, photos souvenir, confettis."}], g34:[{name:"Cérémonie d'ouverture production", desc:"Plus complexe: athlètes défilent, porte-drapeau, moment de gloire."},{name:"5 épreuves variées", desc:"Course, saut, lancer, agilité, force — chacune testant quelque chose de différent."},{name:"Système de points", desc:"Points pour les places (or=10, argent=7, bronze=5) — total à la fin pour équipe gagnante."},{name:"Podium avec musique", desc:"Vraie musique olympique jouée, hymne national de chaque gagnant."}], g56:[{name:"Olympiques complet", desc:"Ouverture./10 épreuves (sprint, saut, lancer, agilité, relais, force, flexibilité, endurance, défi surprise, équipe)."},{name:"Gestion complète", desc:"Un groupe gère le timing, un groupe l'arbitrage, un groupe le scoring — rôles distincts."},{name:"Cérémonie grande", desc:"Ouverture avec flamme et hymnes, cérémonie de clôture avec discours des gagnants."},{name:"Esprit olympique", desc:"Discussion sur le fair-play, les valeurs olympiques — même perdants sont célébrés."}]}},
+
+  {id:15, emoji:"🦸", title:"Super-Héros", source:"new", cat:"creatif", desc:"Créer son propre super-héros, pouvoirs spéciaux, costumes — être un héros!", tip:"Chaque enfant crée son héros unique — il n'y a pas de limite à la créativité ici. Plus c'est bizarre, plus c'est cool!", univers:["flash"], materials:["Vêtements colorés", "Cape en tissu", "Marqueurs", "Carton pour masque", "Corde"], groups:{g12:[{name:"Mon cape de héros", desc:"Chaque enfant reçoit une cape (ou la fabrique) et crée son identité — nom, couleur, pouvoir."},{name:"Pouvoir imaginaire", desc:"Dessiner son pouvoir unique: super-force, vol, invisibilité, transformation — tout est possible!"},{name:"Parade des héros", desc:"Tous les héros défilent et crient leur nom — 'Je suis SUPER-CHAT! Je vole!'."},{name:"Défi héroïque simple", desc:"Sauver un ours en peluche 'kidnappé' du moniteur — jeu dramatique amusant."}], g34:[{name:"Costume complet", desc:"Cape, masque, ceinture, logo — créer un vrai costume d'après ses idées."},{name:"Histoire du héros", desc:"Écrire (ou raconter) d'où vient son héros, comment il a eu ses pouvoirs, sa mission."},{name:"Affiche wanted", desc:"Créer une affiche style comic-book avec le visage de son héros — très cool!"},{name:"Combat héros vs méchants", desc:"Jeu dramatique où les héros combattent un méchant (moniteur) — action épique!"}], g56:[{name:"Super-héros équipe", desc:"En groupe, créer une équipe de héros avec dynamique (chef, scientifique, force brute, super-agilité, etc.)."},{name:"Mission secrète héros", desc:"L'équipe reçoit une mission à accomplir — défis ingénieux à surmonter avec leurs 'pouvoirs'."},{name:"Comic-book héros", desc:"Créer une BD de son héros en 6 cases — illustration + histoire cohérente."},{name:"Défi combat", desc:"Deux équipes de héros s'affrontent dans des épreuves utilisant leurs 'pouvoirs' respectifs."}]}},
+
+  {id:16, emoji:"🏕️", title:"Survie / Survivor", source:"new", cat:"exterieur", desc:"Défis de survie, alliances, éliminations — l'aventure ultime!", tip:"C'est plus amusant si on crée de vrais alliances dramatiques et on annonce les 'éliminations' avec suspense.", univers:["aventurier"], materials:["Cordes", "Nourriture simple", "Tente imaginaire", "Carte du site", "Parchemin défis"], groups:{g12:[{name:"Camp de base", desc:"Trouver un endroit, installer une 'base' avec branches/couvertures — créer l'ambiance de campement."},{name:"Chasse à manger", desc:"Trésor caché avec 'nourriture' (fruits réels ou cartes de fruits) — trouver 5 éléments."},{name:"Feu de camp imaginaire", desc:"Asseoir autour d'un feu fictif, raconter des histoires, chanter — ambiance survie chaleureuse."},{name:"Défi simple survie", desc:"Construire un abri minimal, allumer une lumière (lampe de poche), donner les consignes du jeu."}], g34:[{name:"Campement complet", desc:"Vraie installation: lieu protégé, rangement, zone de feu, zone de repas — organisation!"},{name:"5 défis survie", desc:"Chasse, construction abri, défi d'eau, création outil, cuisson simple — épreuves variées."},{name:"Système d'alliance", desc:"Les enfants forment des alliances — qui travaille avec qui? Les alliances changent chaque jour."},{name:"Système d'élimination", desc:"À la fin, vote secret — une personne 'quitte' (devient arbitre). Suspense dramatique!"}], g56:[{name:"Grand jeu Survivor complet", desc:"8-10 épreuves sur plusieurs jours: construction, nourriture, stratégie, force physique, défi surprise."},{name:"Conseil de tribu", desc:"À la fin de chaque jour, réunion dramatique — chacun explique pourquoi il mérite de rester."},{name:"Système points/immunité", desc:"Gagnants d'épreuves obtiennent l'immunité pour ne pas être votés — stratégie complexe!"},{name:"Grand finale", desc:"Les 3 derniers survivants — épreuve finale épique pour devenir 'Sole Survivor du camp'!"}]}},
+
+  {id:17, emoji:"🎮", title:"Gaming", source:"new", cat:"mouvement", desc:"Jeux vidéo grandeur nature, avatars, combats — l'univers gaming prend vie!", tip:"RPG physique où les enfants ont des 'statistiques' (force, agilité, magie) — ils adorent ça.", univers:["aventurier","librex"], materials:["Cartes de personnage", "Dés", "Bandeaux de rôle", "Trésors carton", "Monnaie de jeu"], groups:{g12:[{name:"Création personnage simple", desc:"Choisir une classe (chevalier, magicien, archer) — recevoir une carte de stats simplifiée."},{name:"Quest facile", desc:"Mission simple: 'Récupère 5 pièces d'or cachées autour du camp' — accomplir et revenir."},{name:"Combat simulé", desc:"Un enfant vs un moniteur — on lance un dé pour voir qui gagne (pas de contact réel)."},{name:"Inventaire magique", desc:"Créer un sac avec des objets imaginaires (épée, potion, clé magique) — collection de trésors!"}], g34:[{name:"RPG physique léger", desc:"Chaque joueur a une classe avec pouvoirs différents — débloquer des pouvoirs en complétant des défis."},{name:"Quests proggressives", desc:"5 quests enchaînées: chaque réussite donne accès à la suivante — histoire et progression!"},{name:"Boss final", desc:"Combat dramatique contre un 'boss' (moniteur avec costumes imaginaires) — qui peut le vaincre?"},{name:"Système levelling", desc:"Accumulation XP en complétant défis — plus fort = débloquer des zones et pouvoirs."}], g56:[{name:"MMO camp version", desc:"Monde ouvert avec zones différentes, quests variées, boss, alliances de guilde (équipes)."},{name:"Système économique", desc:"Monnaie de jeu: gagner en combattant/vendant, dépenser pour items/services — vraie économie!"},{name:"Raids multi-groupes", desc:"Deux guildes s'allient temporairement pour un 'raid' contre un monstre géant — coopération ET compétition."},{name:"Finale épique", desc:"Tout le monde converge pour combat final contre méchant ultime — cinématique dramatique!"}]}},
+
+  {id:18, emoji:"☀️", title:"Plage & Été", source:"new", cat:"exterieur", desc:"Builds de sable, jeux de plage, baignade imaginaire — ambiance vacances d'été!", tip:"L'eau réelle est bonus mais pas nécessaire — piscine de balles, chaises longues et soleil suffisent pour l'ambiance.", univers:["aventurier"], materials:["Seaux et pelles", "Bâtons", "Serviettes", "Chaises longues", "Parasol imaginaire"], groups:{g12:[{name:"Château de sable", desc:"Creuser, construire un château avec tours — travail collectif, très satisfaisant!"},{name:"Jeux plage simples", desc:"Balle de plage, frisbee, jeu d'eau avec seau — amusement basique."},{name:"BBQ de plage", desc:"Préparer un repas imaginaire (fruits, sandwich) — pique-nique festif."},{name:"Feu de camp plage", desc:"Asseoir autour en cercle, raconter des histoires de plage."}], g34:[{name:"Projet construction plage", desc:"Château élaboré, digue, piscine creusée — plusieurs équipes, rivales amicales."},{name:"Volleyball de plage", desc:"Filet improvisé, ballon soft, règles simples — jeu fun."},{name:"Course relais plage", desc:"Sprint dans le sable, sauter au-dessus d'obstacle, slalom — parcours amusant."},{name:"Pique-nique festif", desc:"Vrai petit repas sur serviettes à la plage — sandwichs, fruits, jus tropicaux."}], g56:[{name:"Compétition builds plage", desc:"Deux équipes font le plus beau château — jury vote pour design, créativité, stabilité."},{name:"Olympiques plage", desc:"5 épreuves: volleyball, course, build, frisbee, nage relais — scoring complet."},{name:"Fête plage complète", desc:"Music, nourriture, décor (serviettes, parasols), ambiance vraie vacances."},{name:"Concours beauté plage", desc:"Meilleur château, meilleur look plage, meilleur pique-nique — catégories amusantes, pas compétitif."}]}},
+
+  {id:19, emoji:"🌙", title:"Soirée Pyjama", source:"new", cat:"fete", desc:"Tout en pyjamas, cinéma, jeux de nuit — l'ambiance pyjama party!", tip:"C'est plus magique si c'est vraiment en fin d'après-midi/soir — lampes de poche et couvertures créent l'ambiance.", univers:["librex"], materials:["Pyjamas", "Sacs de couchage", "Lampes de poche", "Couvertures", "Cinéma setup"], groups:{g12:[{name:"Pyjama party look", desc:"Mettre les pyjamas, c'est déjà l'ambiance! Photo de groupe en pyjamas."},{name:"Cinéma pyjama", desc:"Film familial court (20-30 min), pop-corn, les enfants assis sur coussins."},{name:"Jeux de chambre", desc:"Jeux calmes: charades, devinettes, blagues — pas trop d'énergie."},{name:"Histoire avant dodo", desc:"Moniteur raconte une histoire avec lampe de poche — très zen."}], g34:[{name:"Setup pyjama party", desc:"Coussins, couvertures, chaises longues — créer un vrai setup confortable."},{name:"Film + pop-corn", desc:"Vrai film, pop-corn fait maison (ou acheté) — cinéma maison!"},{name:"Jeux pyjama thématiques", desc:"Twister couché, charades, devinettes, blagues — amusement décontracté."},{name:"Snacks et jus", desc:"Fruits, pop-corn, jus, bonbons (justement) — tout ce que tu aimes en pyjama party!"}], g56:[{name:"Pyjama party production complète", desc:"Décor cosy, film, snacks maison, ambiance entièrement orchestrée."},{name:"Jeux sociaux", desc:"Truth or dare, Mafia, jeux de conversation — vraie pyjama party conversation."},{name:"Projet créatif pyjama", desc:"Peindre des pyjamas, créer des masques de sommeil — souvenirs!"},{name:"Karaoké/musique relaxe", desc:"Musique calme, chanter ensemble — vibe plutôt zen et amusée."}]}},
+
+  {id:20, emoji:"🕹️", title:"Années 90", source:"new", cat:"culture", desc:"Nostalgie années 90, musique, mode, jeux — retour au passé cool!", tip:"Les années 90, c'est accessible méme pour les enfants — c'est devenu cool rétro! Des vieux clips YouTube existent.", univers:["librex"], materials:["Costumes 90s", "Musique compilation", "Jeux 90s", "Accessoires rétro"], groups:{g12:[{name:"Look années 90", desc:"Vêtements colorés, baggy, lunettes de soleil — se transformer en enfant des années 90."},{name:"Jeux 90s simples", desc:"Snake (sur papier), jeu de corde, jeu de billes — classiques de l'époque."},{name:"Musique 90s danse", desc:"Danser sur hits 90s (Spice Girls, All Stars, etc.) — musique festive et familière."},{name:"Quiz années 90", desc:"Facile: 'Quel groupe chantait Wannabe?' — initiation amusante à la décennie."}], g34:[{name:"Costume 90s complet", desc:"Baggys, crop top, chaussettes hautes, toute la mode — transformation complète!"},{name:"Jeux 90s nostalgia", desc:"Tamagotchi (version papier), Game Boy simulé, jeux de cour classiques."},{name:"Karaoké années 90", desc:"Chanter les grands hits — Backstreet Boys, Britney, Aqua, TLC."},{name:"Quiz 90s moyens", desc:"Films, séries, jeux vidéo, mode — qui connaît le mieux les années 90?"}], g56:[{name:"Décor années 90 complet", desc:"Affichage: posters, décor coloré/fluo, ambiance entière transformée."},{name:"Costume show années 90", desc:"Défilé de mode 90s — baggy wars, qui a le meilleur look?"},{name:"Quiz culture années 90", desc:"Questions difficiles: films, séries obscures, jeux vidéo, événements — qui est le vrai fan?"},{name:"Retro gaming 90s", desc:"Jeux vidéo simples des années 90 (Mario, Sonic) — faire un petit tournoi nostalgique."}]}},
+
+  {id:21, emoji:"🍕", title:"Chef Cuisinier", source:"new", cat:"creatif", desc:"Cuisiner ensemble, recettes, créations culinaires — l'art de la cuisine!", tip:"Même une recette très simple (pizza, cookies, salade) plaît énormément si les enfants la font eux-mêmes.", univers:["flash"], materials:["Ingrédients simples", "Batterie de cuisine", "Tabliers", "Toque de chef"], groups:{g12:[{name:"Pizza simple maison", desc:"Pâte (du commerce ou préfaite), sauce, fromage, garnitures — chaque enfant crée sa pizza."},{name:"Décoration gâteau", desc:"Gâteau pré-cuisiné, glaçage, bonbons pour décorer — art culinaire sucré!"},{name:"Salade créative", desc:"Éplucher légumes simples, assembler sa salade personnalisée — healthy et créatif."},{name:"Dégusta finale", desc:"Manger ensemble ce qu'on a créé — fierté et délices!"}], g34:[{name:"Recette complexe", desc:"Cookies, pancakes, ou pizza — vraie recette avec étapes, mesures, cuisson."},{name:"Plat salé personnalisé", desc:"Chaque enfant ajoute ses ingrédients à une recette de base — variété!"},{name:"Décoration gâteau artistique", desc:"Glaçage coloré, art avec sucre, composition créative — plus d'ambition."},{name:"Service de restaurant", desc:"Présenter les plats, dresser les assiettes — vrai service comme au restaurant!"}], g56:[{name:"Menu 3 plats", desc:"Apéritif (salade), plat (pizza/pâtes), dessert (gâteau ou cookies) — repas complet!"},{name:"Rôles culinaires", desc:"Un chef commandant, des pâtissiers, des cuisiniers, un maître d'hôtel — vraie brigade!"},{name:"Plats thématiques", desc:"Menu inspiré d'une cuisine (italienne, asiatique, mexicaine) — cohérence et ambition."},{name:"Présentation gastronomique", desc:"Dresser les assiettes avec soin, servir les autres groupes — expérience restaurant étoilé!"}]}},
+
+  {id:22, emoji:"🐾", title:"Safari Animaux", source:"new", cat:"exterieur", desc:"Chasse photo aux animaux, observation sauvage, faits animaliers — explorer la faune!", tip:"Avoir des peluches cachées ou affichages d'animaux aide — les enfants cherchent et apprennent les vraies créatures.", univers:["aventurier"], materials:["Images/peluches animaux", "Jumelles carton", "Caméra (téléphone)", "Guide animaux", "Peinture camouflage"], groups:{g12:[{name:"Chasse photo animaux facile", desc:"Chercher 5 'animaux' cachés dehors avec une vraie photo de chacun — photographier avec téléphone."},{name:"Fait animal", desc:"Apprendre un fait sur chaque animal: 'Le lion est le roi, le singe est intelligent...' — mémorisation joyeuse."},{name:"Marche silencieuse safari", desc:"Marcher très lentement dans la 'savane' (parc) — observer les vrais oiseaux/insectes."},{name:"Dessin safari", desc:"Dessiner l'animal favori découvert — exposition des dessins."}], g34:[{name:"Chasse photo complet safari", desc:"10 animaux cibles cachés — photographier chacun, noter le lieu, apprendre les faits."},{name:"Identification animaux", desc:"Images mélangées — classer par: herbivore/carnivore, habitats, continents."},{name:"Costume animal", desc:"Chacun choisit un animal, apprend ses caractéristiques, imite ses mouvements."},{name:"Patrouille safari", desc:"Équipes parcourent le site en observant nature réelle — insectes, oiseaux, plantes."}], g56:[{name:"Safari grand complet", desc:"Exploration entière du site comme naturaliste — documenter au moins 15 créatures."},{name:"Présentateur nature", desc:"Chaque enfant présente 'son' animal: habitat, alimentation, faits, photos — style David Attenborough!"},{name:"Chaîne alimentaire Safari", desc:"Représenter la chaîne: producteur → herbivore → carnivore — concept écologique clair."},{name:"Exposition naturelle", desc:"Photos, illustrations, faits — créer un vrai musée d'histoire naturelle du camp!"}]}},
+
+  {id:23, emoji:"✈️", title:"Tour du Monde", source:"new", cat:"culture", desc:"Visite de pays, cuisines du monde, cultures différentes — tour du monde express!", tip:"Chaque station = un pays avec drapeau, musique, activité culturelle spécifique. Fais des petits 'passeports' à tamponner!", univers:["librex"], materials:["Drapeaux", "Musique par pays", "Cartes du monde", "Passeports carton", "Timbres"], groups:{g12:[{name:"Mon passeport de voyageur", desc:"Petit livret avec chaque pays — tamponner à chaque station."},{name:"4 stations pays", desc:"Japon (origami), Mexique (musique), Italie (pâtes), Afrique (danse) — activité par pays."},{name:"Goûts du monde", desc:"Essayer 4 spécialités culinaires simples — gout du voyage!"},{name:"Drapeau du monde", desc:"Apprendre 4 drapeaux et leurs pays — mémoire amusante."}], g34:[{name:"Passeport complet", desc:"Vrai carnet avec pages, chaque pays tamponné — objet souvenir!"},{name:"6 stations pays", desc:"Chaque station: drapeau, music, activité culturelle (danses, arts, jeux), petit snack local."},{name:"Apprenez 6 mots", desc:"Bonjour, merci, au revoir, oui, non, s'il vous plaît dans les 6 langues du jour."},{name:"Défi culinaire monde", desc:"Goûter 6 aliments/plats — étoile Michelin du voyage!"}], g56:[{name:"Tour du monde complet", desc:"8 pays avec stations élaborées: drapeau, culture, activité, cuisine, musique, faits géographiques."},{name:"Guide touristique", desc:"Chaque enfant présente son pays préféré — style National Geographic."},{name:"Olympiques culturelles", desc:"Jeux traditiels de différents pays — compétition amicale monde."},{name:"Festival culturel", desc:"Musique, danse, cuisine, costumes — vraie célébration mondiale en miniature!"}]}},
+
+  {id:24, emoji:"🎭", title:"Théâtre & Impro", source:"new", cat:"creatif", desc:"Scène, jeux d'impro, sketches — l'art dramatique pour tous!", tip:"La peur du public est naturelle — commencer petit, célébrer chaque tentative, aucune critique.", univers:["librex"], materials:["Tapis scène", "Projecteur", "Accessoires props", "Scripts simples"], groups:{g12:[{name:"Échauffement théâtre fun", desc:"Jeux dramatiques: imiter animaux, émotions exagérées, tout le monde rit."},{name:"Mini-sketch 1 minute", desc:"Sketch très court (une blague, une action drôle) — tout le monde passe."},{name:"Impro guidée", desc:"Moniteur donne une situation simple ('Tu es un chat qui parle') et l'enfant agit — très amusant!"},{name:"Applaudissements théâtre", desc:"Célébration chaque fois — chaque enfant applaudis chaleureusement."}], g34:[{name:"Atelier impro", desc:"Jeux: alphabet (scène où chaque réplique commence par la lettre suivante), histoire collaborative."},{name:"Sketch équipe 3-5 min", desc:"Petite équipe écrit et joue un sketch court — costume optionnel."},{name:"Impro scénario surprise", desc:"Moniteur donne une situation surprise — équipe improvise 3-5 min sur place."},{name:"Représentation publique", desc:"Tous les sketches devant les autres groupes — vrai spectacle de théâtre camp!"}], g56:[{name:"Pièce de théâtre courte", desc:"Vrai script 10-15 min avec rôles variés, répétitions, costumes — production théâtrale."},{name:"Jeux impro avancés", desc:"Oui, et... (construction collaborative), miroir (deux personnes en sync), dernier mot."},{name:"Spectacle impro + sketch", desc:"Mix: 3 sketches écrit + 2 improvisations guidées — format divertissement complet."},{name:"Gala de théâtre", desc:"Ouverture, performances, applaudissements tondus, remise d'Oscar en carton — vraie cérémonie!"}]}},
+
+  {id:25, emoji:"🎵", title:"Musique & Rythme", source:"new", cat:"creatif", desc:"Instruments improvises, chants, jeux musicaux — créer de la musique ensemble!", tip:"Les instruments simples (bâtons, cuillères, pots) font du bruit magnifique — très satisfaisant pour les enfants.", univers:["flash","librex"], materials:["Instruments divers", "Tambours carton", "Bâtons", "Cuillères", "Partitions simples"], groups:{g12:[{name:"Instruments improvisés", desc:"Créer instruments avec du matériel: pot = tambour, bâton + tuyau = trompette, cuillères = claquettes."},{name:"Chant ensemble", desc:"Chanter une chanson simple ensemble (Twinkle, Frère Jacques, etc.) — harmonie joyeuse!"},{name:"Jeu rythme simple", desc:"Suivre un rythme que tape le moniteur — applaudir en synchrone."},{name:"Danse musique", desc:"Danser sur musique simple — suivre le rythme avec tout le corps."}], g34:[{name:"Orchestre carton", desc:"Vrai petit orchestre avec 6-8 instruments fait maison — chacun son rôle."},{name:"Composition simple", desc:"Inventer une mélodie simple (do, mi, sol, do...) — très basique mais ORIGINAL!"},{name:"Karaoké groupe", desc:"Chanter en groupe sur base karaoké — harmonie et confiance."},{name:"Jeu rythme complexe", desc:"Rythmes plus difficiles, patterns mélangés, tous ensemble — concentration et fun!"}], g56:[{name:"Orchestre production", desc:"12+ instruments, dirigeant, rôles distincts (premier violon, percussion, etc.) — vraie orchestre!"},{name:"Composition originale", desc:"Écrire vraiment une mélodie + rythme simples sur papier — création musicale!"},{name:"Karaoké production", desc:"Scène, lumières, 3+ chansons, public enthousiaste — spectacle musical!"},{name:"Concert final", desc:"Orchestre joue + chanteurs chantent + danseurs dansent — fusion artistique totale!"}]}},
+
+  {id:26, emoji:"🏰", title:"Disney", source:"2021", cat:"creatif", desc:"Bricolage Ratatouille, Toy Story et chasse aux trésors Disney — l'univers magique prend vie!", tip:"Le Bingo Disney est parfait comme activité bouche-trou — prépare les cartons d'avance.", univers:["flash","librex"], materials:["Images Disney", "Papier carton coloré", "Crayons/ciseaux/colle", "Autocollants"], groups:{g12:[{name:"Chapeau chef Ratatouille", desc:"Raconter l'histoire, chaque enfant fabrique son chapeau de chef avec 2 feuilles collées."},{name:"Bingo Disney", desc:"Cartons avec personnages — le moniteur montre une image pour animer l'activité."},{name:"Cerceau musical Disney", desc:"Cerceau musical avec musique films Disney — jouer ensemble."},{name:"Dessin Bikini Bottom/Neverland", desc:"Dessiner son monde Disney préféré — présentation et devinette du monde par les autres."}], g34:[{name:"Bricolage Toy Story", desc:"Fabriquer Slinky, extraterrestres ou Forky avec matériel simple."},{name:"Trivia Disney en équipes", desc:"Quiz sur personnages, films, chansons Disney."},{name:"Commando Disney", desc:"Récupérer trésors et lampe magique avant Jafar — 25 min avec zones de sécurité."},{name:"Would you rather Disney", desc:"Questions fun: nager avec Ariel OU voler avec Peter Pan?"}], g56:[{name:"Chasse au trésor personnages", desc:"20 personnages Disney cachés partout sur le site — équipes rivales cherchent."},{name:"Guess Who Disney", desc:"Construire Guess Who avec personnages trouvés à la chasse."},{name:"Alphabet Disney", desc:"Sur un grand rouleau, trouver un personnage pour chaque lettre."},{name:"Karaoké chansons Disney", desc:"Grands classiques — Libérée, Sous l'océan, Hakuna Matata."}]}},
+
+  {id:27, emoji:"⚡", title:"Harry Potter", source:"2021", cat:"exterieur", desc:"Grand jeu sorciers inspiré Poudlard — épreuves épiques, potions magiques, course balais!", tip:"Musique Harry Potter en fond sonore + moniteurs en sorciers = ambiance immédiate magique.", univers:["aventurier","librex"], materials:["Musique HP", "Capes/baguettes", "Nouilles piscine (balais)", "Matériel défis", "Bandeau yeux"], groups:{g12:[{name:"Course obstacles (yeux bandés)", desc:"Trouver baguettes dans forêt interdite — moniteurs guident avec obstacles imaginaires."},{name:"Devinettes sorcières", desc:"Questions simples sur sorciers et créatures magiques."},{name:"Course de balais", desc:"Course à califourchon sur nouille — faire le tour du terrain vite."},{name:"Potion magique simple", desc:"Chercher 3 ingrédients naturels dehors, mélanger dans eau — nommer sa potion."}], g34:[{name:"Quiz Harry Potter adapté", desc:"Questions sur personnages, sorts, maisons Poudlard — en équipes."},{name:"Course balais chronométrée", desc:"Record de groupe sur nouille de piscine."},{name:"Virelangues contre-fourchelangue", desc:"Épreuve diction — phrases complexes sans trébucher."},{name:"Potion délivrance", desc:"Trouver ingrédients précis (cheveu, fleurs, épines) pour libérer Harry."}], g56:[{name:"Grand jeu Poudlard complet", desc:"5 épreuves: parcours, quiz, balais, virelangues, potion — chacune donne une lettre."},{name:"Échiquier géant", desc:"Grille craie, enfants = pièces — moniteurs jouent petit échiquier."},{name:"Choixpeau maisons", desc:"Assignation maisons (Gryffondor/Serpentard) — compétition par points."},{name:"Organisation animation", desc:"Plus vieux gèrent stations — deviennent préfets Poudlard."}]}},
+
+  {id:28, emoji:"🎲", title:"Jeux de société", source:"2021", cat:"culture", desc:"Classiques jeux de société grandeur nature — Clue, Battleship, Monopoly!", tip:"Battleship géant (deux groupes téléphone) = hit — prépare grilles d'avance.", univers:["librex"], materials:["Cartons quadrillés", "Marqueurs", "Dés géants", "Craie sol"], groups:{g12:[{name:"Hedbanz animaux", desc:"Carton animal sur le front — poser questions oui/non pour deviner."},{name:"Mémoire géant", desc:"Cartes retournées sol — trouver paires à tour de rôle, coopératif."},{name:"Jeu oie géant", desc:"Grille craie, enfants pions — dé géant, cases avec défis simples."},{name:"Simon dit (jeux)", desc:"Mimer jouer aux échecs, DS, dés."}], g34:[{name:"Battleship papier équipe", desc:"Construire grille, jouer en duo — version simple classique."},{name:"Clue simplifié", desc:"Meurtre camp à résoudre — 3 suspects, 3 armes, 3 pièces."},{name:"Monopoly défi", desc:"Mr. Monopoly (moniteur) donne défis pour gagner argent fictif."},{name:"Charades jeux de société", desc:"Mimer jeux de société classiques — équipes devinent rapide."}], g56:[{name:"Battleship géant inter-groupes", desc:"Deux groupes grille géante — communication téléphone pour coordonnées attaque."},{name:"Clue grandeur nature", desc:"Enquête zones site — chaque zone donne indice. Quel suspect/arme/salle?"},{name:"Crée ton jeu", desc:"Inventer jeu avec règles simples — tester, faire jouer autres groupes."},{name:"Tournoi jeux de société", desc:"5 jeux rotation — tableau scores, champions fin."}]}},
+
+  {id:29, emoji:"🗺️", title:"Amazing Race", source:"2021", cat:"exterieur", desc:"Course épique site avec défis, passeports, chronomètre — inspiré The Amazing Race!", tip:"Chronométrer équipes séparément évite congestion — suspense jusqu'à fin.", univers:["aventurier"], materials:["Passeports carton", "Indices imprimés", "Matériel défis", "Chronomètre", "Bandanas couleurs"], groups:{g12:[{name:"Passeport voyageur", desc:"Chaque enfant fabrique passeport papier plié — décoré, tamponné à chaque défi."},{name:"Défis simples chronométrés", desc:"3 stations: balle cuillère, panier basketball, devinette animale."},{name:"Bandana d'équipe", desc:"En duo, créer bandana couleur — identité équipe course."},{name:"Cérémonie arrivée", desc:"Chaque équipe arrive 'ligne arrivée', reçoit tampon — tous gagnants."}], g34:[{name:"Course 5 stations", desc:"5 défis: objets cachés, transporter eau, pétanque, casse-tête, charades."},{name:"Système passeport + tampons", desc:"Passeport complet = gagner."},{name:"Défi eau boue", desc:"Récupérer objets bac d'eau (ou boue) pour prochain indice."},{name:"Finale grand photo", desc:"Dernière station: trouver responsable, photo groupe = preuve arrivée."}], g56:[{name:"Amazing Race chronométré complet", desc:"Tout site — 6-8 stations défis variés, chrono séparé chaque équipe."},{name:"Défis stratégiques", desc:"Stations donnent choix 2 défis (rapide/difficile vs lent/facile)."},{name:"Alliance sabotage amical", desc:"Station joker pour retarder autre équipe 1 min — tension dramatique."},{name:"Podium debriefing", desc:"Afficher temps tableau — chaque équipe explique stratégie."}]}},
+
+  {id:30, emoji:"📺", title:"Télé-réalités", source:"2021", cat:"culture", desc:"Love Island, Amazing Race, America's Got Talent — émissions prennent vie!", tip:"America's Got Talent soir = parfait — enfants préparent numéro journée.", univers:["librex"], materials:["Tapis/cônes (îles)", "Chronomètre", "Papier dessin", "Micro symbolique"], groups:{g12:[{name:"Talent show simple", desc:"Chaque enfant présente talent 30 sec (chanson, saut, grimace, blague)."},{name:"Love is blind facile", desc:"Regarder voisin 10 sec, retourner, dessiner visage mémoire."},{name:"Danse musicale téléréalité", desc:"Élimination douce — musique arrête, moniteur nomme couleur, porteurs sauvés."},{name:"Vote cœurs", desc:"Après activité, voter cœurs carton 'étoile moment'."}], g34:[{name:"Love Island (tague îles)", desc:"4 tapis = îles, 1 centre = île éliminés. 2 directeurs taguent. Partenaires synchronisés!"},{name:"Amazing Race adapté (3 stations)", desc:"3 défis simples passeports — duo première équipe complète gagne."},{name:"America's Got Talent", desc:"Duo/solo numéro 2 min (danse, blague, mime, acrobatie, chanson). Jury note."},{name:"Vote dramatique", desc:"Après ronde, vote public éliminer (symboliquement) équipe — éliminés deviennent juges."}], g56:[{name:"Love Island stratégique complet", desc:"Version longue zones délimitées, alliances, rebondissements moniteur-animateur."},{name:"Production America's Got Talent", desc:"Plus vieux organisent ET animent — animateur, juges, coulisses, votes public."},{name:"Big Brother Camp Edition", desc:"Jour missions secrètes discrètes — observer, analyser qui a quoi. Vote fin journée."},{name:"Casting show", desc:"Groupe prépare présentation convaincre producteurs (moniteurs) les choisir."}]}},
+
+  {id:31, emoji:"👗", title:"Fashion Week", source:"new", cat:"creatif", desc:"Création tenues matériaux recyclés, défilé mode, vote jury — Paris camp!", tip:"Sacs poubelles, journaux, alu, ruban créent tenues incroyables — sous-estime pas!", univers:["flash"], materials:["Sacs poubelles colorés", "Papier journal", "Papier aluminium", "Ruban adhésif coloré", "Ciseaux", "Marqueurs"], groups:{g12:[{name:"Mon chapeau créateur", desc:"Décorer chapeau papier simple — plumes, crayons, autocollants, papier coloré."},{name:"Collier créateur", desc:"Enfiler pâtes, boutons, pailles colorées lacet — collier unique."},{name:"Défilé en musique", desc:"Chaque enfant défile création piste improvisée — musique défilé, applaudissements obligatoires."},{name:"Dessin tenue rêve", desc:"Dessiner tenue parfaite — moniteur affiche créations mini-galerie fashion."}], g34:[{name:"Création tenue recyclée", desc:"Sacs poubelles, journal, ruban — créer tenue complète 15 min, puis défilé."},{name:"Accessoires faits main", desc:"Chapeau, sac, collier, bracelet — compléter tenue A à Z."},{name:"Défilé présentation", desc:"Chaque 'designer' présente 30 sec avant défiler — nom collection, inspiration."},{name:"Vote jury", desc:"Jury (moniteurs/enfants) note 3 catégories: Originalité, Créativité, Présentation."}], g56:[{name:"Collection complète (3 pièces)", desc:"Créer collection 3 éléments cohérents — haut, bas, accessoire + thème."},{name:"Backstage organisation", desc:"Un groupe créateurs, un mannequins, un photographes (moniteur supervise), un jury."},{name:"Défilé production complète", desc:"Musique choisie, présentateur annonce, mannequins défilent — vrai show mode camp."},{name:"Magazine mode camp", desc:"Grande feuille page 'magazine' meilleures créations — photos dessinées + commentaires fashion."}]}},
+
+  {id:32, emoji:"🧽", title:"Bob l'éponge", source:"2021", cat:"creatif", desc:"Bienvenue Bikini Bottom! Bricolages personnages, jeux thématiques, bulles savon géantes!", tip:"Recette bulles géantes (eau + savon vaisselle + glycérine) = WOW garanti — même plus vieux adorent.", univers:["flash","librex"], materials:["Papier carré jaune", "Savon vaisselle", "Glycérine (Dollarama)", "Grands cerceaux bulles", "Crayons/ciseaux"], groups:{g12:[{name:"Bricolage Bob l'éponge", desc:"Carré papier jaune, yeux dessinés, pantalon carré découpé — chaque enfant fait son Bob."},{name:"Chasse bulles savon", desc:"Moniteur fait bulles, enfants attrapent éclatent — activité simple, joie garantie."},{name:"Karaoké thème Bob", desc:"Chanter générique Bob l'éponge ensemble — apprendre paroles, chanter choeur."},{name:"Qui est mon personnage?", desc:"Images personnages (Bob, Patrick, Sandy, Calamard, M. Crabs) — deviner questions simples."}], g34:[{name:"Bricolage personnages complet", desc:"Fabriquer Bob, Patrick (étoile) ou Sandy — papier, carton, matériaux."},{name:"Quiz Bob l'éponge", desc:"Questions sur épisodes, personnages, lieux Bikini Bottom."},{name:"Bulles savon géantes", desc:"Recette: eau + savon vaisselle + glycérine — grands cerceaux plus grosses bulles."},{name:"Recette patty crabe", desc:"Dessiner, créer recette secrète patty crabe — présentation M. Crabs approbation."}], g56:[{name:"Sketch épisode Bob", desc:"Petits groupes recréer/inventer épisode — acting, voix personnages, présentation."},{name:"Quiz avancé battle", desc:"Tournoi connaissances Bob — questions difficiles, éliminatoire, champion."},{name:"Décoration Bikini Bottom", desc:"Transformer coin salle Bikini Bottom — ananas (Bob), rocher (Patrick), créations collectives."},{name:"Bande dessinée Bob", desc:"Créer page BD Bob — équipe, 4 cases minimum, histoire originale, présentation."}]}},
+
+  {id:33, emoji:"🌊", title:"4 Éléments", source:"new", cat:"exterieur", desc:"Eau, Feu, Terre, Air — chaque équipe élément s'affronte défis épiques!", tip:"Assigner éléments tirage au sort matin = identité forte équipe toute journée.", univers:["aventurier","flash"], materials:["Bandanas/dossards 4 couleurs", "Matériel défi varié", "Peinture faciale (optionnel)", "Cartons créations"], groups:{g12:[{name:"Je suis un élément", desc:"Chaque enfant tire élément, image (vague, flamme, feuille, nuage) — imiter mouvement libre."},{name:"Activité thématique simple", desc:"Eau: jeu arrosoir. Terre: ramasser feuilles. Air: souffler balles ping-pong. Feu: course rapide."},{name:"Bricolage mascotte élément", desc:"Dessiner, colorier mascotte son élément — chaque équipe présente."},{name:"Rassemblement final éléments", desc:"Tous éléments ensemble défi coopératif — nature besoin tous éléments survire."}], g34:[{name:"Stations 4 éléments", desc:"Rotation 4 stations thématiques — Eau (relais aquatique), Terre (tour construction), Air (bulles/cerfs-volants), Feu (course vitesse)."},{name:"Défi inter-éléments", desc:"Chaque élément force — défi adapté, puis battle croisée stratégie."},{name:"Création bannière élément", desc:"Équipe créer bannière représentant élément — présentée fièrement battle final."},{name:"Battle éléments", desc:"4 épreuves mixtes — chaque équipe accumule points. Élément dominant = titre journée."}], g56:[{name:"Tournoi complet 4 éléments", desc:"6 épreuves variées (vitesse, force, adresse, créativité, connaissance, teamwork) — tableau scores."},{name:"Défi fusion éléments", desc:"Équipes s'allient temporairement (Eau + Air = pluie) pour défi impossible seul."},{name:"Grand battle final tous ensemble", desc:"Épreuve finale 4 éléments s'affrontent — gagnant = Élément Maître du camp."},{name:"Cérémonie discours éléments", desc:"Chaque chef équipe discours 30 sec puissance son élément — vote public plus convaincant."}]}}
+];
+
+let activeGroup = 'all';
+let activeCat = 'all';
+let activeUnivers = 'all';
+
+const universBannerTexts = {
+  flash: "⚡ Flash — Bricolage & Création. Activités de fabrication, arts visuels, sciences et expression créative. Les enfants créent, construisent et repartent avec quelque chose!",
+  librex: "🎭 Librex — Artistique & Exploration. Théâtre, improvisation, jeux de rôles, danse et exploration culturelle. Les enfants s'expriment, explorent et découvrent!",
+  aventurier: "💪 Aventurier — Gros Muscles & Plein air. Sports, défis physiques, courses et aventures en plein air. Les enfants bougent, compétitionnent et se dépassent!"
+};
+
+function setUnivers(btn, univers) {
+  document.querySelectorAll('.univ-btn').forEach(b => {
+    b.classList.remove('active-all', 'active-flash', 'active-librex', 'active-aventurier');
+  });
+  const classMap = {all:'active-all', flash:'active-flash', librex:'active-librex', aventurier:'active-aventurier'};
+  btn.classList.add(classMap[univers]);
+  activeUnivers = univers;
+  const banner = document.getElementById('univ-banner');
+  if (univers === 'all') {
+    banner.style.display = 'none';
+  } else {
+    banner.style.display = 'block';
+    banner.className = 'univ-banner ' + univers;
+    document.getElementById('univ-banner-text').textContent = universBannerTexts[univers];
+  }
+  renderGrid();
+}
+
+function setGroup(btn, group) {
+  document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeGroup = group;
+  renderGrid();
+}
+
+function setCat(btn, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat = cat;
+  renderGrid();
+}
+
+function renderGrid() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = themes.filter(t => {
+    const matchUnivers = activeUnivers === 'all' || (t.univers && t.univers.includes(activeUnivers));
+    const matchCat = activeCat === 'all' || t.cat === activeCat;
+    const matchGroup = activeGroup === 'all' || (t.groups && t.groups[activeGroup]);
+    const matchQ = !q || t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q);
+    return matchUnivers && matchCat && matchGroup && matchQ;
+  });
+  const grid = document.getElementById('grid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="no-results"><p>Aucun thème trouvé. Essaie une autre recherche!</p></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(t => {
+    const sourceEmoji = {vanier:"⭐", new:"✨", "2021":"📚"};
+    let badge = '';
+    if (t.univers.includes('flash')) badge = '<span class="badge badge-flash">⚡ Flash</span>';
+    else if (t.univers.includes('librex')) badge = '<span class="badge badge-librex">🎭 Librex</span>';
+    else if (t.univers.includes('aventurier')) badge = '<span class="badge badge-aventurier">💪 Aventurier</span>';
+    if (t.univers.length > 1) badge += '<span class="badge" style="background: rgba(255,107,53,0.15); color: #FF6B35; border: 1px solid rgba(255,107,53,0.3);">+' + (t.univers.length-1) + '</span>';
+    return `<div class="card" onclick="openModal(${t.id})"><div class="card-header"><span class="card-emoji">${t.emoji}</span><div class="card-title-group"><div class="card-title">${t.title}</div></div></div><div class="card-desc">${t.desc}</div><div class="card-footer">${badge}</div></div>`;
+  }).join('');
+}
+
+function openModal(id) {
+  const t = themes.find(th => th.id === id);
+  document.getElementById('modal-emoji').textContent = t.emoji;
+  document.getElementById('modal-title').textContent = t.title;
+  document.getElementById('modal-tip').textContent = t.tip;
+  document.getElementById('modal-materials').innerHTML = t.materials.map(m => '<li>' + m + '</li>').join('');
+  let tabsHtml = '';
+  let contentsHtml = '';
+  ['g12','g34','g56'].forEach((g,i) => {
+    if (t.groups[g] && t.groups[g].length > 0) {
+      tabsHtml += `<button class="modal-tab ${i===0?'active':''}" data-group="${g}" onclick="switchTab('${g}',this)">Groupe ${g.slice(-1) === '2' ? '1-2' : g.slice(-1) === '4' ? '3-4' : '5-6'}</button>`;
+      const activities = t.groups[g].map(a => `<div class="activity"><div class="activity-title">${a.name}</div><div class="activity-desc">${a.desc}</div></div>`).join('');
+      contentsHtml += `<div class="modal-tab-content ${i===0?'active':''}" data-group="${g}">${activities}</div>`;
+    }
+  });
+  document.getElementById('modal-tabs').innerHTML = tabsHtml;
+  document.getElementById('modal-tab-contents').innerHTML = contentsHtml;
+  document.getElementById('modal').classList.add('open');
+}
+
+function switchTab(group, btn) {
+  document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.modal-tab-content[data-group="${group}"]`).classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function maybeClose(e) {
+  if (e.target.id === 'modal') closeModal();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+document.addEventListener('DOMContentLoaded', renderGrid);
+</script>
+
+</body>
+</html>
